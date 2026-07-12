@@ -27,6 +27,7 @@ export default [
         console: 'readonly',
         URL: 'readonly',
         crypto: 'readonly',
+        HTMLInputElement: 'readonly',
       },
     },
     rules: {
