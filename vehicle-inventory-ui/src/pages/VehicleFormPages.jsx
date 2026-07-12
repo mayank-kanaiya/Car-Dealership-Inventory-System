@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useVehicleDetail, useCreateVehicle, useUpdateVehicle } from '../features/vehicles/hooks/useVehicles';
+import {
+  useVehicleDetail,
+  useCreateVehicle,
+  useUpdateVehicle,
+} from '../features/vehicles/hooks/useVehicles';
 import vehicleService from '../features/vehicles/services/vehicleService';
 import VehicleForm from '../features/vehicles/components/VehicleForm';
 import ImageUpload from '../features/vehicles/components/ImageUpload';
@@ -26,7 +30,11 @@ function CreateVehiclePage() {
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-text-primary mb-6">Add New Vehicle</h1>
       <div className="bg-surface border border-border rounded-xl p-6">
-        <VehicleForm onSubmit={handleSubmit} onCancel={() => navigate('/vehicles')} isSubmitting={createVehicle.isPending} />
+        <VehicleForm
+          onSubmit={handleSubmit}
+          onCancel={() => navigate('/vehicles')}
+          isSubmitting={createVehicle.isPending}
+        />
       </div>
     </div>
   );
@@ -52,7 +60,12 @@ function EditVehiclePage() {
     }
   };
 
-  if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
   if (error) return <ErrorDisplay message={error.message} />;
   if (!vehicle) return null;
 

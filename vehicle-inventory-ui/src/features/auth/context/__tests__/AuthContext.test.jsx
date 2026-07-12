@@ -14,8 +14,16 @@ function TestComponent() {
       <span data-testid="is-loading">{String(isLoading)}</span>
       {user && <span data-testid="user-name">{user.fullName}</span>}
       {user && <span data-testid="user-role">{user.role}</span>}
-      <button onClick={() => login({ email: 'john@example.com', password: 'password123' })}>Login</button>
-      <button onClick={() => register({ fullName: 'Jane', email: 'jane@example.com', password: 'password123' })}>Register</button>
+      <button onClick={() => login({ email: 'john@example.com', password: 'password123' })}>
+        Login
+      </button>
+      <button
+        onClick={() =>
+          register({ fullName: 'Jane', email: 'jane@example.com', password: 'password123' })
+        }
+      >
+        Register
+      </button>
       <button onClick={logout}>Logout</button>
     </div>
   );
@@ -50,7 +58,10 @@ describe('AuthContext', () => {
 
   it('logout clears user and isAuthenticated', async () => {
     const user = userEvent.setup();
-    localStorage.setItem('auth_token', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IkpvaG4gRG9lIiwiZW1haWwiOiJqb2huQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJleHAiOjk5OTk5OTk5OTl9.signature');
+    localStorage.setItem(
+      'auth_token',
+      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IkpvaG4gRG9lIiwiZW1haWwiOiJqb2huQGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJleHAiOjk5OTk5OTk5OTl9.signature'
+    );
     renderWithAuth(<TestComponent />);
 
     await waitFor(() => {
@@ -75,7 +86,13 @@ describe('AuthContext', () => {
   });
 
   it('restores session on mount from localStorage', async () => {
-    const payload = { sub: '1', name: 'John Doe', email: 'john@example.com', role: 'USER', exp: 9999999999 };
+    const payload = {
+      sub: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      role: 'USER',
+      exp: 9999999999,
+    };
     const encoded = btoa(JSON.stringify(payload));
     localStorage.setItem('auth_token', `header.${encoded}.sig`);
 
@@ -88,7 +105,13 @@ describe('AuthContext', () => {
   });
 
   it('isAdmin is true for ADMIN role', async () => {
-    const payload = { sub: '1', name: 'Admin User', email: 'admin@example.com', role: 'ADMIN', exp: 9999999999 };
+    const payload = {
+      sub: '1',
+      name: 'Admin User',
+      email: 'admin@example.com',
+      role: 'ADMIN',
+      exp: 9999999999,
+    };
     const encoded = btoa(JSON.stringify(payload));
     localStorage.setItem('auth_token', `header.${encoded}.sig`);
 

@@ -45,7 +45,10 @@ function RegisterForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
       {serverError && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-danger" role="alert">
+        <div
+          className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-danger"
+          role="alert"
+        >
           {serverError}
         </div>
       )}

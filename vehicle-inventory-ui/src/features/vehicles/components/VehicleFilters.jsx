@@ -25,7 +25,10 @@ function VehicleFilters({ onFilter, initialFilters = {} }) {
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-end">
       <div className="flex-1 w-full">
-        <label htmlFor="vehicle-search" className="block text-sm font-medium text-text-secondary mb-1">
+        <label
+          htmlFor="vehicle-search"
+          className="block text-sm font-medium text-text-secondary mb-1"
+        >
           Search
         </label>
         <SearchBar
@@ -36,24 +39,36 @@ function VehicleFilters({ onFilter, initialFilters = {} }) {
         />
       </div>
       <div className="w-full sm:w-48">
-        <label htmlFor="category-filter" className="block text-sm font-medium text-text-secondary mb-1">
+        <label
+          htmlFor="category-filter"
+          className="block text-sm font-medium text-text-secondary mb-1"
+        >
           Category
         </label>
         <select
           id="category-filter"
           value={category}
-          onChange={(e) => { setCategory(e.target.value); onFilter({ make: make.trim(), category: e.target.value }); }}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            onFilter({ make: make.trim(), category: e.target.value });
+          }}
           className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         >
           <option value="">All Categories</option>
           {VEHICLE_CATEGORIES.map((cat) => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
+            <option key={cat.value} value={cat.value}>
+              {cat.label}
+            </option>
           ))}
         </select>
       </div>
       <div className="flex gap-2">
-        <Button variant="primary" size="sm" onClick={handleSearch}>Search</Button>
-        <Button variant="ghost" size="sm" onClick={handleClear}>Clear</Button>
+        <Button variant="primary" size="sm" onClick={handleSearch}>
+          Search
+        </Button>
+        <Button variant="ghost" size="sm" onClick={handleClear}>
+          Clear
+        </Button>
       </div>
     </div>
   );

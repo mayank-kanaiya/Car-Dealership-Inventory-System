@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8ec0bca4-847c-4784-b2c1-5fdd403f6c0d" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Record" />
+        <option value="Exception" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "kanaiya-mayank"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/mayank-kanaiya/Car-Dealership-Inventory-System.git",
+    "accountId": "1db673ed-751a-4266-a855-d7adf535d349"
+  }
+}]]></component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="3GOCozuLN8fwiACBOqfF89fsuHt" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "JUnit.AuthControllerTest.executor": "Run",
+    "JUnit.AuthControllerTest.shouldReturnBadRequestWhenPasswordIsBlank.executor": "Run",
+    "JUnit.InventoryControllerTest.executor": "Run",
+    "JUnit.InventoryServiceImplTest.executor": "Run",
+    "JUnit.JwtServiceTest.executor": "Run",
+    "JUnit.UserRegistrationTest.shouldMapRegistrationInputValuesToUserEntity.executor": "Run",
+    "JUnit.VehicleControllerTest.executor": "Run",
+    "Maven.Car-Dealership-Inventory-System [clean].executor": "Run",
+    "Maven.Car-Dealership-Inventory-System [compile].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.CarDealershipInventorySystemApplication.executor": "Run",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "frontend/feature/auth-module",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Spring Boot.CarDealershipInventorySystemApplication">
+    <configuration name="AuthControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Car-Dealership-Inventory-System" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.incubyte.car_dealership_inventory_system.auth.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.incubyte.car_dealership_inventory_system.auth" />
+      <option name="MAIN_CLASS_NAME" value="com.incubyte.car_dealership_inventory_system.auth.AuthControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AuthControllerTest.shouldReturnBadRequestWhenPasswordIsBlank" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Car-Dealership-Inventory-System" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.incubyte.car_dealership_inventory_system.auth.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.incubyte.car_dealership_inventory_system.auth" />
+      <option name="MAIN_CLASS_NAME" value="com.incubyte.car_dealership_inventory_system.auth.AuthControllerTest" />
+      <option name="METHOD_NAME" value="shouldReturnBadRequestWhenPasswordIsBlank" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="InventoryControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Car-Dealership-Inventory-System" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.incubyte.car_dealership_inventory_system.inventory.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.incubyte.car_dealership_inventory_system.inventory" />
+      <option name="MAIN_CLASS_NAME" value="com.incubyte.car_dealership_inventory_system.inventory.InventoryControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="InventoryServiceImplTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Car-Dealership-Inventory-System" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.incubyte.car_dealership_inventory_system.inventory.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.incubyte.car_dealership_inventory_system.inventory" />
+      <option name="MAIN_CLASS_NAME" value="com.incubyte.car_dealership_inventory_system.inventory.InventoryServiceImplTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="VehicleControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Car-Dealership-Inventory-System" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.incubyte.car_dealership_inventory_system.vehicle.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.incubyte.car_dealership_inventory_system.vehicle" />
+      <option name="MAIN_CLASS_NAME" value="com.incubyte.car_dealership_inventory_system.vehicle.VehicleControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CarDealershipInventorySystemApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="Car-Dealership-Inventory-System" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.incubyte.car_dealership_inventory_system.CarDealershipInventorySystemApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.VehicleControllerTest" />
+        <item itemvalue="JUnit.InventoryServiceImplTest" />
+        <item itemvalue="JUnit.InventoryControllerTest" />
+        <item itemvalue="JUnit.AuthControllerTest" />
+        <item itemvalue="JUnit.AuthControllerTest.shouldReturnBadRequestWhenPasswordIsBlank" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-cffe25b9f5b3-intellij.indexing.shared.core-IU-253.28294.334" />
+        <option value="bundled-js-predefined-d6986cc7102b-c7e53b3be11b-JavaScript-IU-253.28294.334" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8ec0bca4-847c-4784-b2c1-5fdd403f6c0d" name="Changes" comment="" />
+      <created>1783833411152</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1783833411152</updated>
+      <workItem from="1783833415829" duration="21688000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

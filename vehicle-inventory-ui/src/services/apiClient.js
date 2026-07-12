@@ -25,7 +25,8 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-    const message = error.response?.data?.message || error.message || 'An unexpected error occurred';
+    const message =
+      error.response?.data?.message || error.message || 'An unexpected error occurred';
     return Promise.reject(new Error(message));
   }
 );

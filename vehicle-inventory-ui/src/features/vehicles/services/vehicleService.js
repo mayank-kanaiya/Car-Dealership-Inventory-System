@@ -2,7 +2,9 @@ import apiClient from '../../../services/apiClient';
 
 const vehicleService = {
   async getAll({ page = 0, size = 20, sortBy = 'id', direction = 'asc' } = {}) {
-    const response = await apiClient.get('/vehicles', { params: { page, size, sortBy, direction } });
+    const response = await apiClient.get('/vehicles', {
+      params: { page, size, sortBy, direction },
+    });
     return response.data;
   },
 

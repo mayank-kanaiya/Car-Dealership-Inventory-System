@@ -6,7 +6,8 @@ export const mockVehicles = [
     category: 'SEDAN',
     price: 28500.0,
     quantityInStock: 15,
-    imageUrl: 'https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/toyota-camry.jpg',
+    imageUrl:
+      'https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/toyota-camry.jpg',
   },
   {
     id: '660e8400-e29b-41d4-a716-446655440001',
@@ -30,7 +31,8 @@ export const mockVehicles = [
 
 export const mockAuthResponse = {
   message: 'Login successful',
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IlVTRVIifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+  token:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6IlVTRVIifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
 };
 
 export const mockUser = {

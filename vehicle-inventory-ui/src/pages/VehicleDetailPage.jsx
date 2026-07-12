@@ -25,7 +25,8 @@ function VehicleDetailPage() {
 
   if (!vehicle) return null;
 
-  const categoryLabel = VEHICLE_CATEGORIES.find((c) => c.value === vehicle.category)?.label || vehicle.category;
+  const categoryLabel =
+    VEHICLE_CATEGORIES.find((c) => c.value === vehicle.category)?.label || vehicle.category;
 
   return (
     <div>
@@ -43,7 +44,9 @@ function VehicleDetailPage() {
               src={vehicle.imageUrl || '/images/default-vehicle.svg'}
               alt={`${vehicle.make} ${vehicle.model}`}
               className="w-full h-full object-cover"
-              onError={(e) => { e.target.src = '/images/default-vehicle.svg'; }}
+              onError={(e) => {
+                e.target.src = '/images/default-vehicle.svg';
+              }}
             />
           </div>
           <div className="p-6 md:w-1/2 flex flex-col justify-center">
@@ -57,7 +60,9 @@ function VehicleDetailPage() {
               ${vehicle.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <div className="mb-6">
-              <span className={`text-lg font-semibold ${vehicle.quantityInStock > 0 ? 'text-success' : 'text-danger'}`}>
+              <span
+                className={`text-lg font-semibold ${vehicle.quantityInStock > 0 ? 'text-success' : 'text-danger'}`}
+              >
                 {vehicle.quantityInStock > 0
                   ? `${vehicle.quantityInStock} units in stock`
                   : 'Out of stock'}

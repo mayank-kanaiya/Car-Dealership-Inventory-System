@@ -52,7 +52,13 @@ describe('ConfirmDialog Component', () => {
     const user = userEvent.setup();
     const onConfirm = vi.fn();
     render(
-      <ConfirmDialog isOpen={true} onConfirm={onConfirm} onCancel={vi.fn()} title="Delete" message="Sure?" />
+      <ConfirmDialog
+        isOpen={true}
+        onConfirm={onConfirm}
+        onCancel={vi.fn()}
+        title="Delete"
+        message="Sure?"
+      />
     );
 
     await user.click(screen.getByRole('button', { name: /confirm/i }));
@@ -63,7 +69,13 @@ describe('ConfirmDialog Component', () => {
     const user = userEvent.setup();
     const onCancel = vi.fn();
     render(
-      <ConfirmDialog isOpen={true} onConfirm={vi.fn()} onCancel={onCancel} title="Delete" message="Sure?" />
+      <ConfirmDialog
+        isOpen={true}
+        onConfirm={vi.fn()}
+        onCancel={onCancel}
+        title="Delete"
+        message="Sure?"
+      />
     );
 
     await user.click(screen.getByRole('button', { name: /cancel/i }));

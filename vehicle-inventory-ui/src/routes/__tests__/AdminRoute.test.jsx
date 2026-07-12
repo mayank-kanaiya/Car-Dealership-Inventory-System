@@ -10,13 +10,26 @@ vi.mock('../../features/auth/hooks/useAuth', () => ({
 
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
-function renderWithRouter(ui, initialRoute = '/') {
+function renderWithRouter({
+  isAuthenticated = false,
+  isAdmin = false,
+  isLoading = false,
+  route = '/',
+}) {
+  vi.mocked(useAuth).mockReturnValue({
+    isAuthenticated,
+    isAdmin,
+    isLoading,
+    user: isAuthenticated ? { role: isAdmin ? 'ADMIN' : 'USER' } : null,
+  });
   return render(
-    <MemoryRouter initialEntries={[initialRoute]}>
+    <MemoryRouter initialEntries={[route]}>
       <Routes>
-        <Route path="/" element={ui} />
+        <Route element={<AdminRoute />}>
+          <Route path="/" element={<div>Admin Content</div>} />
+        </Route>
         <Route path="/login" element={<div>Login Page</div>} />
-        <Route path="/unauthorized" element={<div>Unauthorized Page</div>} />
+        <Route path="/vehicles" element={<div>Vehicles Page</div>} />
       </Routes>
     </MemoryRouter>
   );
@@ -24,21 +37,18 @@ function renderWithRouter(ui, initialRoute = '/') {
 
 describe('AdminRoute', () => {
   it('renders children when user is ADMIN', () => {
-    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: true, isAdmin: true, user: { role: 'ADMIN' } });
-    renderWithRouter(<AdminRoute><div>Admin Content</div></AdminRoute>);
+    renderWithRouter({ isAuthenticated: true, isAdmin: true });
     expect(screen.getByText(/admin content/i)).toBeInTheDocument();
   });
 
-  it('redirects to /unauthorized when user is not ADMIN', () => {
-    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: true, isAdmin: false, user: { role: 'USER' } });
-    renderWithRouter(<AdminRoute><div>Admin Content</div></AdminRoute>);
-    expect(screen.getByText(/unauthorized page/i)).toBeInTheDocument();
+  it('redirects to /vehicles when user is not ADMIN', () => {
+    renderWithRouter({ isAuthenticated: true, isAdmin: false });
+    expect(screen.getByText(/vehicles page/i)).toBeInTheDocument();
     expect(screen.queryByText(/admin content/i)).not.toBeInTheDocument();
   });
 
   it('redirects to /login when not authenticated', () => {
-    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: false, isAdmin: false, user: null });
-    renderWithRouter(<AdminRoute><div>Admin Content</div></AdminRoute>);
+    renderWithRouter({ isAuthenticated: false });
     expect(screen.getByText(/login page/i)).toBeInTheDocument();
   });
 });

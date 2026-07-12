@@ -56,7 +56,11 @@ describe('useVehicles hooks', () => {
     it('generates correct cache keys', () => {
       expect(VEHICLE_KEYS.all).toEqual(['vehicles']);
       expect(VEHICLE_KEYS.lists()).toEqual(['vehicles', 'list']);
-      expect(VEHICLE_KEYS.list({ make: 'Toyota' })).toEqual(['vehicles', 'list', { make: 'Toyota' }]);
+      expect(VEHICLE_KEYS.list({ make: 'Toyota' })).toEqual([
+        'vehicles',
+        'list',
+        { make: 'Toyota' },
+      ]);
       expect(VEHICLE_KEYS.detail('123')).toEqual(['vehicles', 'detail', '123']);
     });
   });

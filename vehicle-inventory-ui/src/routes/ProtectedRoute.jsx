@@ -1,9 +1,8 @@
-import { Navigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import Spinner from '../components/Spinner/Spinner';
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -18,11 +17,7 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <Outlet />;
 }
-
-ProtectedRoute.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export default ProtectedRoute;
