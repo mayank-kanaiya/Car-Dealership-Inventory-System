@@ -39,6 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -66,6 +67,9 @@ class VehicleControllerTest {
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
 
+    @MockitoBean
+    private com.incubyte.car_dealership_inventory_system.service.ImageService imageService;
+
     private VehicleRequest createValidVehicleRequest() {
         return new VehicleRequest(
                 "Toyota",
@@ -79,7 +83,7 @@ class VehicleControllerTest {
     private VehicleResponse createVehicleResponse(UUID id, String make, String model,
                                                    VehicleCategory category, BigDecimal price,
                                                    Integer quantity) {
-        return new VehicleResponse(id, make, model, category, price, quantity);
+        return new VehicleResponse(id, make, model, category, price, quantity, "/images/default-vehicle.svg");
     }
 
     // =========================================================================
@@ -1352,6 +1356,166 @@ class VehicleControllerTest {
                     .andExpect(jsonPath("$[0].category").value("SEDAN"))
                     .andExpect(jsonPath("$[0].price").value(28000.00))
                     .andExpect(jsonPath("$[0].quantityInStock").value(5));
+        }
+    }
+
+    // =========================================================================
+    // POST /api/vehicles/:id/image
+    // =========================================================================
+
+    @Nested
+    @DisplayName("POST /api/vehicles/{id}/image")
+    class UploadVehicleImage {
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should upload image and return 200 with updated vehicle")
+        void shouldUploadImageSuccessfully() throws Exception {
+            UUID id = UUID.randomUUID();
+            VehicleResponse response = createVehicleResponse(
+                    id, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 10);
+            response = new VehicleResponse(id, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 10,
+                    "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/test-image.jpg");
+
+            when(vehicleService.uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class)))
+                    .thenReturn(response);
+
+            byte[] imageContent = "fake-image-content".getBytes();
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+                            .file(new org.springframework.mock.web.MockMultipartFile(
+                                    "file", "test-image.jpg", "image/jpeg", imageContent)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(id.toString()))
+                    .andExpect(jsonPath("$.imageUrl").value(
+                            "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/test-image.jpg"));
+
+            verify(vehicleService).uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 404 when vehicle to upload image is not found")
+        void shouldReturnNotFoundWhenVehicleDoesNotExist() throws Exception {
+            UUID id = UUID.randomUUID();
+
+            when(vehicleService.uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class)))
+                    .thenThrow(new ResourceNotFoundException("Vehicle not found with id: " + id));
+
+            byte[] imageContent = "fake-image-content".getBytes();
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+                            .file(new org.springframework.mock.web.MockMultipartFile(
+                                    "file", "test-image.jpg", "image/jpeg", imageContent)))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+
+            verify(vehicleService).uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 400 when no file is provided")
+        void shouldReturnBadRequestWhenNoFileProvided() throws Exception {
+            UUID id = UUID.randomUUID();
+
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", id))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 400 when id is not a valid UUID")
+        void shouldReturnBadRequestWhenIdIsNotValidUuid() throws Exception {
+            byte[] imageContent = "fake-image-content".getBytes();
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", "not-a-uuid")
+                            .file(new org.springframework.mock.web.MockMultipartFile(
+                                    "file", "test-image.jpg", "image/jpeg", imageContent)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 when uploading PNG image")
+        void shouldUploadPngImageSuccessfully() throws Exception {
+            UUID id = UUID.randomUUID();
+            VehicleResponse response = new VehicleResponse(id, "Honda", "Civic", VehicleCategory.SEDAN,
+                    new BigDecimal("25000.00"), 5,
+                    "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/test-image.png");
+
+            when(vehicleService.uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class)))
+                    .thenReturn(response);
+
+            byte[] imageContent = "fake-png-content".getBytes();
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+                            .file(new org.springframework.mock.web.MockMultipartFile(
+                                    "file", "test-image.png", "image/png", imageContent)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.imageUrl").value(
+                            "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/test-image.png"));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 when uploading WebP image")
+        void shouldUploadWebPImageSuccessfully() throws Exception {
+            UUID id = UUID.randomUUID();
+            VehicleResponse response = new VehicleResponse(id, "BMW", "X5", VehicleCategory.SUV,
+                    new BigDecimal("65000.00"), 3,
+                    "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/test-image.webp");
+
+            when(vehicleService.uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class)))
+                    .thenReturn(response);
+
+            byte[] imageContent = "fake-webp-content".getBytes();
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+                            .file(new org.springframework.mock.web.MockMultipartFile(
+                                    "file", "test-image.webp", "image/webp", imageContent)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.imageUrl").value(
+                            "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/test-image.webp"));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should call upload service with correct parameters")
+        void shouldCallUploadServiceWithCorrectParameters() throws Exception {
+            UUID id = UUID.randomUUID();
+            VehicleResponse response = new VehicleResponse(id, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 10,
+                    "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/test-image.jpg");
+
+            when(vehicleService.uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class)))
+                    .thenReturn(response);
+
+            byte[] imageContent = "fake-image-content".getBytes();
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+                            .file(new org.springframework.mock.web.MockMultipartFile(
+                                    "file", "test-image.jpg", "image/jpeg", imageContent)))
+                    .andExpect(status().isOk());
+
+            verify(vehicleService).uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should update existing image URL when uploading new image")
+        void shouldUpdateExistingImageUrlWhenUploadingNewImage() throws Exception {
+            UUID id = UUID.randomUUID();
+            VehicleResponse response = new VehicleResponse(id, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 10,
+                    "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/new-image.jpg");
+
+            when(vehicleService.uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class)))
+                    .thenReturn(response);
+
+            byte[] imageContent = "new-image-content".getBytes();
+            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+                            .file(new org.springframework.mock.web.MockMultipartFile(
+                                    "file", "new-image.jpg", "image/jpeg", imageContent)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.imageUrl").value(
+                            "https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/new-image.jpg"));
         }
     }
 }

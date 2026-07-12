@@ -60,7 +60,7 @@ class InventoryControllerTest {
     private VehicleResponse createVehicleResponse(UUID id, String make, String model,
                                                    VehicleCategory category, BigDecimal price,
                                                    Integer quantityInStock) {
-        return new VehicleResponse(id, make, model, category, price, quantityInStock);
+        return new VehicleResponse(id, make, model, category, price, quantityInStock, "/images/default-vehicle.svg");
     }
 
     private InventoryRequest createInventoryRequest(Integer quantity) {
