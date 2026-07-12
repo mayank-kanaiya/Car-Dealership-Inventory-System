@@ -1,6 +1,5 @@
-package com.incubyte.car_dealership_inventory_system.auth.dto;
+package com.incubyte.car_dealership_inventory_system.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record AuthenticationRequest(

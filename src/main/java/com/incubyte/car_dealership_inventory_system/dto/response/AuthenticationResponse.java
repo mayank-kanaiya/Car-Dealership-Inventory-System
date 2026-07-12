@@ -1,4 +1,4 @@
-package com.incubyte.car_dealership_inventory_system.auth.dto;
+package com.incubyte.car_dealership_inventory_system.dto.response;
 
 public record AuthenticationResponse(
         String message,

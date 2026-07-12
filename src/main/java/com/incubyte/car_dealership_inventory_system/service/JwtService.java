@@ -1,4 +1,4 @@
-package com.incubyte.car_dealership_inventory_system.auth;
+package com.incubyte.car_dealership_inventory_system.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -29,10 +29,6 @@ public class JwtService {
     @Value("${application.security.jwt.expiration:3600000}")
     private long expirationMillis;
 
-    // Constructor injection is vital for TDD.
-    // Spring uses @Value in production, but our JwtServiceTest can pass dummy values manually!
-
-
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
@@ -51,10 +47,8 @@ public class JwtService {
             final String userEmail = extractEmail(token);
             return (userEmail.equals(expectedEmail)) && !isTokenExpired(token);
         } catch (ExpiredTokenException e) {
-            // Our test expects this specific exception when the token expires
             throw e;
         } catch (Exception e) {
-            // Any other malformed token issue should just return false
             return false;
         }
     }
@@ -72,7 +66,6 @@ public class JwtService {
                     .getBody();
             return claimsResolver.apply(claims);
         } catch (ExpiredJwtException e) {
-            // JJWT throws ExpiredJwtException. We map it to our custom exception to satisfy the test.
             throw new ExpiredTokenException("Token has expired");
         }
     }

@@ -1,6 +1,7 @@
-package com.incubyte.car_dealership_inventory_system.security;
+package com.incubyte.car_dealership_inventory_system.config;
 
-import com.incubyte.car_dealership_inventory_system.auth.JwtAuthenticationFilter;
+import com.incubyte.car_dealership_inventory_system.config.JwtAuthenticationFilter;
+import com.incubyte.car_dealership_inventory_system.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,8 +26,6 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
 
-    // CRITICAL FIX: Explicit manual constructor instead of @RequiredArgsConstructor
-    // This ensures your IDE and compiler know these fields are initialized.
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, CustomUserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userDetailsService = userDetailsService;
@@ -37,7 +36,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Open endpoints for register/login
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
