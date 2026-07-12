@@ -1,0 +1,84 @@
+package com.incubyte.car_dealership_inventory_system.auth;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.incubyte.car_dealership_inventory_system.exception.ExpiredTokenException;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.function.Function;
+
+@Service
+@RequiredArgsConstructor
+@AllArgsConstructor
+public class JwtService {
+
+    @Value("${application.security.jwt.secret-key:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
+    private String secretKey;
+
+    @Value("${application.security.jwt.expiration:3600000}")
+    private long expirationMillis;
+
+    // Constructor injection is vital for TDD.
+    // Spring uses @Value in production, but our JwtServiceTest can pass dummy values manually!
+
+
+    public String generateToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String extractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public boolean isValidToken(String token, String expectedEmail) {
+        try {
+            final String userEmail = extractEmail(token);
+            return (userEmail.equals(expectedEmail)) && !isTokenExpired(token);
+        } catch (ExpiredTokenException e) {
+            // Our test expects this specific exception when the token expires
+            throw e;
+        } catch (Exception e) {
+            // Any other malformed token issue should just return false
+            return false;
+        }
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractClaim(token, Claims::getExpiration).before(new Date());
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        try {
+            final Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claimsResolver.apply(claims);
+        } catch (ExpiredJwtException e) {
+            // JJWT throws ExpiredJwtException. We map it to our custom exception to satisfy the test.
+            throw new ExpiredTokenException("Token has expired");
+        }
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+}

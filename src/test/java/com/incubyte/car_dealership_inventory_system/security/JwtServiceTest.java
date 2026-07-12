@@ -1,8 +1,11 @@
 package com.incubyte.car_dealership_inventory_system.security;
 
+import com.incubyte.car_dealership_inventory_system.auth.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import com.incubyte.car_dealership_inventory_system.exception.ExpiredTokenException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -16,9 +19,9 @@ class JwtServiceTest {
     @BeforeEach
     void setUp() {
         // We initialize it with a dummy secret key and expiration time for testing.
-        String dummySecret = "this-is-a-very-secure-secret-key-for-testing-purposes-only";
+        String dummySecret = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
         long oneHourInMillis = 1000 * 60 * 60;
-        
+
         jwtService = new JwtService(dummySecret, oneHourInMillis);
     }
 
@@ -87,7 +90,7 @@ class JwtServiceTest {
     @DisplayName("Should throw an ExpiredTokenException when attempting to validate an expired token")
     void shouldFailWhenTokenIsExpired() throws InterruptedException {
         // Arrange: Create a JwtService with a 1-millisecond expiration time for this specific test
-        JwtService fastExpiringJwtService = new JwtService("this-is-a-very-secure-secret-key-for-testing-purposes-only", 1);
+        JwtService fastExpiringJwtService = new JwtService("404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970", 1);
         String email = "expired@dealership.com";
         String token = fastExpiringJwtService.generateToken(email);
 
