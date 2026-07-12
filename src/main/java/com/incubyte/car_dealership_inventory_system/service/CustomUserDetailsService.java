@@ -1,4 +1,4 @@
-package com.incubyte.car_dealership_inventory_system.security;
+package com.incubyte.car_dealership_inventory_system.service;
 
 import com.incubyte.car_dealership_inventory_system.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service // CRITICAL: Tells Spring to manage this class
+@Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 

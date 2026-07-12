@@ -1,4 +1,4 @@
-package com.incubyte.car_dealership_inventory_system.security;
+package com.incubyte.car_dealership_inventory_system.service;
 
 import com.incubyte.car_dealership_inventory_system.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail(); // We use email as the principal username
+        return user.getEmail();
     }
 
     @Override

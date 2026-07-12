@@ -1,21 +1,24 @@
 package com.incubyte.car_dealership_inventory_system.auth;
 
 import tools.jackson.databind.ObjectMapper;
-import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationRequest; // DOES NOT EXIST YET (RED Phase)
-import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationResponse;
-import com.incubyte.car_dealership_inventory_system.auth.dto.RegistrationRequest;
-import com.incubyte.car_dealership_inventory_system.security.CustomUserDetailsService;
+import com.incubyte.car_dealership_inventory_system.controller.AuthController;
+import com.incubyte.car_dealership_inventory_system.dto.request.AuthenticationRequest;
+import com.incubyte.car_dealership_inventory_system.dto.request.RegistrationRequest;
+import com.incubyte.car_dealership_inventory_system.dto.response.AuthenticationResponse;
 import com.incubyte.car_dealership_inventory_system.exception.GlobalExceptionHandler;
 import com.incubyte.car_dealership_inventory_system.exception.UserAlreadyExistsException;
+import com.incubyte.car_dealership_inventory_system.service.AuthService;
+import com.incubyte.car_dealership_inventory_system.service.CustomUserDetailsService;
+import com.incubyte.car_dealership_inventory_system.service.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.BadCredentialsException; // Will be used for login failures
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;

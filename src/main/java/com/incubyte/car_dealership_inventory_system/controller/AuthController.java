@@ -1,8 +1,9 @@
-package com.incubyte.car_dealership_inventory_system.auth;
+package com.incubyte.car_dealership_inventory_system.controller;
 
-import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationRequest;
-import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationResponse;
-import com.incubyte.car_dealership_inventory_system.auth.dto.RegistrationRequest;
+import com.incubyte.car_dealership_inventory_system.dto.request.AuthenticationRequest;
+import com.incubyte.car_dealership_inventory_system.dto.request.RegistrationRequest;
+import com.incubyte.car_dealership_inventory_system.dto.response.AuthenticationResponse;
+import com.incubyte.car_dealership_inventory_system.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

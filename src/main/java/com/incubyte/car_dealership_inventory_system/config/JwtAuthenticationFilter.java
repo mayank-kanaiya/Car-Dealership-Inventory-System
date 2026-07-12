@@ -1,6 +1,7 @@
-package com.incubyte.car_dealership_inventory_system.auth;
+package com.incubyte.car_dealership_inventory_system.config;
 
-import com.incubyte.car_dealership_inventory_system.security.CustomUserDetailsService;
+import com.incubyte.car_dealership_inventory_system.service.JwtService;
+import com.incubyte.car_dealership_inventory_system.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ex) {
-            // Token validation failed (expired, malformed, etc.), authentication will not be set in context
+            // Token validation failed, authentication will not be set in context
         }
 
         filterChain.doFilter(request, response);
