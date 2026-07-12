@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Implements {@link ImageService} backed by Cloudinary. Uploads are placed in
@@ -26,6 +29,15 @@ public class CloudinaryImageService implements ImageService {
     @Value("${vehicle.default-image:/images/default-vehicle.svg}")
     private String defaultImagePath;
 
+    @Value("${cloudinary.folder:car-dealership/vehicles}")
+    private String uploadFolder;
+
+    @Value("${cloudinary.allowed-formats:image/jpeg,image/png,image/webp,image/gif}")
+    private String allowedFormatsCsv;
+
+    @Value("${cloudinary.max-file-size:5242880}")
+    private long maxFileSize;
+
     /**
      * Uploads the given image to the Cloudinary {@code car-dealership/vehicles}
      * folder and returns the secure CDN URL.
@@ -36,11 +48,23 @@ public class CloudinaryImageService implements ImageService {
      */
     @Override
     public String uploadImage(MultipartFile file) {
+        Set<String> allowedTypes = Arrays.stream(allowedFormatsCsv.split(","))
+                .map(String::trim)
+                .collect(Collectors.toSet());
+
+        if (file.getSize() > maxFileSize) {
+            throw new RuntimeException("File size exceeds maximum allowed: " + maxFileSize + " bytes");
+        }
+        if (!allowedTypes.contains(file.getContentType())) {
+            throw new RuntimeException("File type not allowed: " + file.getContentType()
+                    + ". Allowed: " + allowedFormatsCsv);
+        }
+
         try {
             Map<String, Object> result = cloudinary.uploader().upload(
                     file.getBytes(),
                     ObjectUtils.asMap(
-                            "folder", "car-dealership/vehicles",
+                            "folder", uploadFolder,
                             "resource_type", "image"
                     )
             );

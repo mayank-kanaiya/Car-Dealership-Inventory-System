@@ -38,6 +38,9 @@ class CloudinaryImageServiceTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(cloudinaryImageService, "defaultImagePath", "/images/default-vehicle.svg");
+        ReflectionTestUtils.setField(cloudinaryImageService, "uploadFolder", "car-dealership/vehicles");
+        ReflectionTestUtils.setField(cloudinaryImageService, "allowedFormatsCsv", "image/jpeg,image/png,image/webp,image/gif");
+        ReflectionTestUtils.setField(cloudinaryImageService, "maxFileSize", 5242880L);
     }
 
     // =========================================================================
@@ -78,6 +81,40 @@ class CloudinaryImageServiceTest {
         );
 
         assertEquals("Failed to upload image: Upload failed", exception.getMessage());
+    }
+
+    // =========================================================================
+    // uploadImage — validation
+    // =========================================================================
+
+    @Test
+    @DisplayName("Should throw when file size exceeds max allowed")
+    void shouldThrowWhenFileSizeExceedsMax() {
+        byte[] largeContent = new byte[6 * 1024 * 1024]; // 6 MB > 5 MB limit
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "large.jpg", "image/jpeg", largeContent);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> cloudinaryImageService.uploadImage(file)
+        );
+
+        assertEquals("File size exceeds maximum allowed: 5242880 bytes", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw when file type is not allowed")
+    void shouldThrowWhenFileTypeNotAllowed() {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "script.exe", "application/octet-stream", "content".getBytes());
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> cloudinaryImageService.uploadImage(file)
+        );
+
+        assertEquals("File type not allowed: application/octet-stream. Allowed: image/jpeg,image/png,image/webp,image/gif",
+                exception.getMessage());
     }
 
     // =========================================================================

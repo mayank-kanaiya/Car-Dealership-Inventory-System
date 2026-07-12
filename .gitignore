@@ -10,3 +10,4 @@ application-prod.yml
 production_coding_standards.md
 implementation_plan.md
 project_structure.md
+src/main/resources/application.properties
