@@ -15,12 +15,7 @@
     "lint-staged": "^15.2.0"
   },
   "lint-staged": {
-    "vehicle-inventory-ui/src/**/*.{js,jsx}": [
-      "eslint --fix --config vehicle-inventory-ui/eslint.config.js",
-      "prettier --write"
-    ],
-    "vehicle-inventory-ui/src/**/*.{css,json,md}": [
-      "prettier --write"
-    ]
+    "vehicle-inventory-ui/src/**/*.{js,jsx}": "node lint-staged-wrapper.mjs eslint",
+    "vehicle-inventory-ui/src/**/*.{css,json,md}": "node lint-staged-wrapper.mjs prettier"
   }
 }

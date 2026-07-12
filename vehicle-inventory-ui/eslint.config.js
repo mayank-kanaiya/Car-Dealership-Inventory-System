@@ -28,6 +28,11 @@ export default [
         URL: 'readonly',
         crypto: 'readonly',
         HTMLInputElement: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        btoa: 'readonly',
+        atob: 'readonly',
+        navigator: 'readonly',
       },
     },
     rules: {

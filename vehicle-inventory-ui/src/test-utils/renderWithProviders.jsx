@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { render } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -19,6 +20,8 @@ export function renderWithProviders(
       </QueryClientProvider>
     );
   }
+
+  Wrapper.propTypes = { children: PropTypes.node.isRequired };
 
   return {
     ...render(ui, { wrapper: Wrapper, ...renderOptions }),
