@@ -2,6 +2,7 @@ package com.incubyte.car_dealership_inventory_system.controller;
 
 import com.incubyte.car_dealership_inventory_system.dto.request.VehicleRequest;
 import com.incubyte.car_dealership_inventory_system.dto.response.VehicleResponse;
+import com.incubyte.car_dealership_inventory_system.enums.VehicleCategory;
 import com.incubyte.car_dealership_inventory_system.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +41,19 @@ public class VehicleController {
     @GetMapping
     public ResponseEntity<List<VehicleResponse>> getAllVehicles() {
         List<VehicleResponse> vehicles = vehicleService.getAllVehicles();
+        return ResponseEntity.ok(vehicles);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<VehicleResponse>> searchVehicles(
+            @RequestParam(required = false) String make,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) VehicleCategory category,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice
+    ) {
+        List<VehicleResponse> vehicles = vehicleService.searchVehicles(
+                make, model, category, minPrice, maxPrice);
         return ResponseEntity.ok(vehicles);
     }
 

@@ -3,12 +3,16 @@ package com.incubyte.car_dealership_inventory_system.service;
 import com.incubyte.car_dealership_inventory_system.dto.request.VehicleRequest;
 import com.incubyte.car_dealership_inventory_system.dto.response.VehicleResponse;
 import com.incubyte.car_dealership_inventory_system.entity.Vehicle;
+import com.incubyte.car_dealership_inventory_system.enums.VehicleCategory;
 import com.incubyte.car_dealership_inventory_system.exception.ResourceNotFoundException;
 import com.incubyte.car_dealership_inventory_system.repository.VehicleRepository;
+import com.incubyte.car_dealership_inventory_system.repository.VehicleSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,6 +65,22 @@ public class VehicleServiceImpl implements VehicleService {
             throw new ResourceNotFoundException("Vehicle not found with id: " + id);
         }
         vehicleRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VehicleResponse> searchVehicles(String make, String model, VehicleCategory category,
+                                                 BigDecimal minPrice, BigDecimal maxPrice) {
+        Specification<Vehicle> spec = Specification
+                .where(VehicleSpecification.hasMake(make))
+                .and(VehicleSpecification.hasModel(model))
+                .and(VehicleSpecification.hasCategory(category))
+                .and(VehicleSpecification.priceBetween(minPrice, maxPrice));
+
+        return vehicleRepository.findAll(spec)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private void applyFields(Vehicle vehicle, VehicleRequest request) {

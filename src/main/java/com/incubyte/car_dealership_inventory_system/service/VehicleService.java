@@ -2,7 +2,9 @@ package com.incubyte.car_dealership_inventory_system.service;
 
 import com.incubyte.car_dealership_inventory_system.dto.request.VehicleRequest;
 import com.incubyte.car_dealership_inventory_system.dto.response.VehicleResponse;
+import com.incubyte.car_dealership_inventory_system.enums.VehicleCategory;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,4 +14,6 @@ public interface VehicleService {
     VehicleResponse getVehicleById(UUID id);
     VehicleResponse updateVehicle(UUID id, VehicleRequest request);
     void deleteVehicle(UUID id);
+    List<VehicleResponse> searchVehicles(String make, String model, VehicleCategory category,
+                                          BigDecimal minPrice, BigDecimal maxPrice);
 }
