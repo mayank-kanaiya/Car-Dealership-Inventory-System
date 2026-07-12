@@ -7,6 +7,7 @@ import com.incubyte.car_dealership_inventory_system.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -69,6 +71,15 @@ public class VehicleController {
             @Valid @RequestBody VehicleRequest request
     ) {
         VehicleResponse response = vehicleService.updateVehicle(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/image")
+    public ResponseEntity<VehicleResponse> uploadVehicleImage(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file
+    ) {
+        VehicleResponse response = vehicleService.uploadVehicleImage(id, file);
         return ResponseEntity.ok(response);
     }
 

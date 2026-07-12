@@ -3,6 +3,7 @@ package com.incubyte.car_dealership_inventory_system.service;
 import com.incubyte.car_dealership_inventory_system.dto.request.VehicleRequest;
 import com.incubyte.car_dealership_inventory_system.dto.response.VehicleResponse;
 import com.incubyte.car_dealership_inventory_system.enums.VehicleCategory;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,4 +17,5 @@ public interface VehicleService {
     void deleteVehicle(UUID id);
     List<VehicleResponse> searchVehicles(String make, String model, VehicleCategory category,
                                           BigDecimal minPrice, BigDecimal maxPrice);
+    VehicleResponse uploadVehicleImage(UUID id, MultipartFile file);
 }

@@ -8,9 +8,11 @@ import com.incubyte.car_dealership_inventory_system.exception.ResourceNotFoundEx
 import com.incubyte.car_dealership_inventory_system.repository.VehicleRepository;
 import com.incubyte.car_dealership_inventory_system.repository.VehicleSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +23,17 @@ import java.util.UUID;
 public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
+    private final ImageService imageService;
+
+    @Value("${vehicle.default-image:/images/default-vehicle.svg}")
+    private String defaultImagePath;
 
     @Override
     @Transactional
     public VehicleResponse addVehicle(VehicleRequest request) {
         Vehicle vehicle = new Vehicle();
         applyFields(vehicle, request);
+        vehicle.setImageUrl(defaultImagePath);
         Vehicle saved = vehicleRepository.save(vehicle);
         return toResponse(saved);
     }
@@ -61,9 +68,9 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public void deleteVehicle(UUID id) {
-        if (!vehicleRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Vehicle not found with id: " + id);
-        }
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+        imageService.deleteImage(vehicle.getImageUrl());
         vehicleRepository.deleteById(id);
     }
 
@@ -83,6 +90,25 @@ public class VehicleServiceImpl implements VehicleService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public VehicleResponse uploadVehicleImage(UUID id, MultipartFile file) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+
+        String oldImageUrl = vehicle.getImageUrl();
+        String newImageUrl = imageService.uploadImage(file);
+
+        vehicle.setImageUrl(newImageUrl);
+        Vehicle saved = vehicleRepository.save(vehicle);
+
+        if (oldImageUrl != null && !oldImageUrl.equals(defaultImagePath)) {
+            imageService.deleteImage(oldImageUrl);
+        }
+
+        return toResponse(saved);
+    }
+
     private void applyFields(Vehicle vehicle, VehicleRequest request) {
         vehicle.setMake(request.make());
         vehicle.setModel(request.model());
@@ -98,7 +124,8 @@ public class VehicleServiceImpl implements VehicleService {
                 vehicle.getModel(),
                 vehicle.getCategory(),
                 vehicle.getPrice(),
-                vehicle.getQuantityInStock()
+                vehicle.getQuantityInStock(),
+                vehicle.getImageUrl()
         );
     }
 }

@@ -56,7 +56,8 @@ public class InventoryServiceImpl implements InventoryService {
                 vehicle.getModel(),
                 vehicle.getCategory(),
                 vehicle.getPrice(),
-                vehicle.getQuantityInStock()
+                vehicle.getQuantityInStock(),
+                vehicle.getImageUrl()
         );
     }
 }

@@ -11,6 +11,7 @@ public record VehicleResponse(
         String model,
         VehicleCategory category,
         BigDecimal price,
-        Integer quantityInStock
+        Integer quantityInStock,
+        String imageUrl
 ) {
 }

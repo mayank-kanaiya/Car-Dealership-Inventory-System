@@ -45,6 +45,9 @@ public class Vehicle {
     @Column(nullable = false)
     private Integer quantityInStock;
 
+    @Column(length = 500)
+    private String imageUrl;
+
     @Version
     private Long version;
 }
