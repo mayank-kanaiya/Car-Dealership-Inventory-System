@@ -1,0 +1,13 @@
+package com.incubyte.car_dealership_inventory_system;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CarDealershipInventorySystemApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(CarDealershipInventorySystemApplication.class, args);
+	}
+
+}
