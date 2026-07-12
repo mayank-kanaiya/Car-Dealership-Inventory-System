@@ -37,7 +37,7 @@ describe('VehicleListPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Vehicle Inventory')).toBeInTheDocument();
     });
-    expect(screen.getByRole('searchbox')).toBeInTheDocument();
+    expect(screen.getByLabelText('Search')).toBeInTheDocument();
     expect(screen.getByLabelText('Category')).toBeInTheDocument();
   });
 });

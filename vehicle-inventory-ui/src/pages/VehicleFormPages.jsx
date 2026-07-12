@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import {
   useVehicleDetail,
   useCreateVehicle,
@@ -28,8 +29,16 @@ function CreateVehiclePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-text-primary mb-6">Add New Vehicle</h1>
-      <div className="bg-surface border border-border rounded-xl p-6">
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-1.5 mb-6 text-sm font-medium text-text-secondary hover:text-primary transition-colors cursor-pointer"
+      >
+        <ArrowLeft size={16} />
+        Back
+      </button>
+      <div className="bg-surface border border-border rounded-2xl p-6 sm:p-8">
+        <h1 className="text-2xl font-bold text-text-primary mb-6">Add New Vehicle</h1>
         <VehicleForm
           onSubmit={handleSubmit}
           onCancel={() => navigate('/vehicles')}
@@ -71,19 +80,29 @@ function EditVehiclePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-text-primary mb-6">Edit Vehicle</h1>
-      <div className="bg-surface border border-border rounded-xl p-6 space-y-6">
-        <ImageUpload
-          currentImageUrl={vehicle.imageUrl}
-          onFileSelect={setImageFile}
-          onRemove={() => setImageFile(null)}
-        />
-        <VehicleForm
-          vehicle={vehicle}
-          onSubmit={handleSubmit}
-          onCancel={() => navigate('/vehicles')}
-          isSubmitting={updateVehicle.isPending}
-        />
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-1.5 mb-6 text-sm font-medium text-text-secondary hover:text-primary transition-colors cursor-pointer"
+      >
+        <ArrowLeft size={16} />
+        Back
+      </button>
+      <div className="bg-surface border border-border rounded-2xl p-6 sm:p-8">
+        <h1 className="text-2xl font-bold text-text-primary mb-6">Edit Vehicle</h1>
+        <div className="space-y-6">
+          <ImageUpload
+            currentImageUrl={vehicle.imageUrl}
+            onFileSelect={setImageFile}
+            onRemove={() => setImageFile(null)}
+          />
+          <VehicleForm
+            vehicle={vehicle}
+            onSubmit={handleSubmit}
+            onCancel={() => navigate('/vehicles')}
+            isSubmitting={updateVehicle.isPending}
+          />
+        </div>
       </div>
     </div>
   );

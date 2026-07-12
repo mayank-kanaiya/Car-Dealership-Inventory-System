@@ -45,7 +45,7 @@ describe('Button Component', () => {
   it('renders secondary variant', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('bg-gray-100');
+    expect(button.className).toContain('bg-surface-secondary');
   });
 
   it('renders danger variant', () => {

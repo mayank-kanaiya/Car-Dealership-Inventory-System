@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Edit } from 'lucide-react';
 import { useVehicleDetail } from '../features/vehicles/hooks/useVehicles';
 import Spinner from '../components/Spinner/Spinner';
 import ErrorDisplay from '../components/ErrorDisplay/ErrorDisplay';
@@ -33,43 +34,61 @@ function VehicleDetailPage() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="mb-6 text-sm text-primary hover:text-primary-hover transition-colors cursor-pointer"
+        className="flex items-center gap-1.5 mb-6 text-sm font-medium text-text-secondary hover:text-primary transition-colors cursor-pointer"
       >
-        &larr; Back to list
+        <ArrowLeft size={16} />
+        Back to inventory
       </button>
-      <div className="bg-surface rounded-xl border border-border overflow-hidden">
+
+      <div className="bg-surface rounded-2xl border border-border overflow-hidden">
         <div className="md:flex">
-          <div className="md:w-1/2 aspect-video md:aspect-auto bg-gray-100">
+          <div className="md:w-1/2 bg-gradient-to-br from-surface-secondary to-gray-200 dark:to-gray-800">
             <img
               src={vehicle.imageUrl || '/images/default-vehicle.svg'}
               alt={`${vehicle.make} ${vehicle.model}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover min-h-[300px]"
               onError={(e) => {
-                e.target.src = '/images/default-vehicle.svg';
+                e.target.style.display = 'none';
               }}
             />
           </div>
-          <div className="p-6 md:w-1/2 flex flex-col justify-center">
-            <div className="flex items-center gap-3 mb-4">
-              <h1 className="text-3xl font-bold text-text-primary">
-                {vehicle.make} {vehicle.model}
-              </h1>
+          <div className="p-6 sm:p-8 md:w-1/2 flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-2">
               <Badge variant="info">{categoryLabel}</Badge>
             </div>
-            <div className="text-4xl font-bold text-primary mb-6">
+            <h1 className="text-3xl sm:text-4xl font-bold text-text-primary mt-3">
+              {vehicle.make} {vehicle.model}
+            </h1>
+            <div className="text-3xl sm:text-4xl font-bold text-primary mt-4">
               ${vehicle.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
-            <div className="mb-6">
+
+            <div className="mt-6 flex items-center gap-2">
               <span
-                className={`text-lg font-semibold ${vehicle.quantityInStock > 0 ? 'text-success' : 'text-danger'}`}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${
+                  vehicle.quantityInStock > 0
+                    ? 'bg-green-50 text-success dark:bg-green-950/50'
+                    : 'bg-red-50 text-danger dark:bg-red-950/50'
+                }`}
               >
+                <span
+                  className={`w-2 h-2 rounded-full ${vehicle.quantityInStock > 0 ? 'bg-success' : 'bg-danger'}`}
+                />
                 {vehicle.quantityInStock > 0
                   ? `${vehicle.quantityInStock} units in stock`
                   : 'Out of stock'}
               </span>
             </div>
-            <div className="flex gap-3">
-              <Button variant="primary" onClick={() => navigate('/vehicles')}>
+
+            <div className="flex gap-3 mt-8">
+              <Button
+                variant="primary"
+                icon={<Edit size={16} />}
+                onClick={() => navigate(`/vehicles/${vehicle.id}/edit`)}
+              >
+                Edit Vehicle
+              </Button>
+              <Button variant="secondary" onClick={() => navigate('/vehicles')}>
                 Browse Inventory
               </Button>
             </div>

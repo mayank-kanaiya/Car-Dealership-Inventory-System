@@ -39,6 +39,6 @@ describe('VehicleDetailPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Toyota Camry')).toBeInTheDocument();
     });
-    expect(screen.getByText(/back to list/i)).toBeInTheDocument();
+    expect(screen.getByText(/back to inventory/i)).toBeInTheDocument();
   });
 });

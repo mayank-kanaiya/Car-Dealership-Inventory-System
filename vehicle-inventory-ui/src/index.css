@@ -4,6 +4,7 @@
   --color-primary: #6366f1;
   --color-primary-hover: #4f46e5;
   --color-primary-light: #e0e7ff;
+  --color-primary-50: #eef2ff;
   --color-danger: #ef4444;
   --color-danger-hover: #dc2626;
   --color-success: #22c55e;
@@ -11,6 +12,7 @@
   --color-warning: #f59e0b;
   --color-surface: #ffffff;
   --color-surface-hover: #f9fafb;
+  --color-surface-secondary: #f3f4f6;
   --color-border: #e5e7eb;
   --color-text-primary: #111827;
   --color-text-secondary: #6b7280;
@@ -18,12 +20,13 @@
 }
 
 .dark {
-  --color-surface: #1f2937;
-  --color-surface-hover: #374151;
-  --color-border: #374151;
-  --color-text-primary: #f9fafb;
-  --color-text-secondary: #9ca3af;
-  --color-text-muted: #6b7280;
+  --color-surface: #0f172a;
+  --color-surface-hover: #1e293b;
+  --color-surface-secondary: #1e293b;
+  --color-border: #334155;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
   --color-primary-light: #312e81;
 }
 
@@ -36,13 +39,42 @@
 }
 
 html {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-secondary);
   color: var(--color-text-primary);
   line-height: 1.6;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
 }

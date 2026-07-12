@@ -13,18 +13,21 @@ function Button({
   ...rest
 }) {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+    'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]';
 
   const variantStyles = {
-    primary: 'bg-primary text-white hover:bg-primary-hover focus:ring-primary',
-    secondary: 'bg-gray-100 text-text-primary hover:bg-gray-200 focus:ring-gray-400',
-    danger: 'bg-danger text-white hover:bg-danger-hover focus:ring-danger',
-    ghost: 'bg-transparent text-text-primary hover:bg-gray-100 focus:ring-gray-400',
+    primary:
+      'bg-primary text-white hover:bg-primary-hover focus:ring-primary shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30',
+    secondary:
+      'bg-surface-secondary text-text-primary hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-gray-400 border border-border',
+    danger:
+      'bg-danger text-white hover:bg-danger-hover focus:ring-danger shadow-sm shadow-danger/20',
+    ghost: 'bg-transparent text-text-primary hover:bg-surface-hover focus:ring-gray-400',
   };
 
   const sizeStyles = {
     sm: 'px-3 py-1.5 text-sm gap-1.5',
-    md: 'px-4 py-2 text-sm gap-2',
+    md: 'px-4 py-2.5 text-sm gap-2',
     lg: 'px-6 py-3 text-base gap-2.5',
   };
 

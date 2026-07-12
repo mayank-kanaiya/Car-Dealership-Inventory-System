@@ -7,7 +7,7 @@ import VehicleFilters from '../VehicleFilters';
 describe('VehicleFilters', () => {
   it('renders search input', () => {
     render(<VehicleFilters onFilter={vi.fn()} />);
-    expect(screen.getByRole('searchbox')).toBeInTheDocument();
+    expect(screen.getByLabelText('Search')).toBeInTheDocument();
   });
 
   it('renders category dropdown', () => {
@@ -20,17 +20,20 @@ describe('VehicleFilters', () => {
     expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
   });
 
-  it('renders clear button', () => {
+  it('inline clear icon appears when search has text', async () => {
+    const user = userEvent.setup();
     render(<VehicleFilters onFilter={vi.fn()} />);
-    expect(screen.getByRole('button', { name: /clear/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear search/i })).not.toBeInTheDocument();
+    await user.type(screen.getByLabelText('Search'), 'Toyota');
+    expect(screen.getByRole('button', { name: /clear search/i })).toBeInTheDocument();
   });
 
   it('calls onFilter with search text on search click', async () => {
     const user = userEvent.setup();
     const onFilter = vi.fn();
     render(<VehicleFilters onFilter={onFilter} />);
-    await user.type(screen.getByRole('searchbox'), 'Toyota');
-    await user.click(screen.getByRole('button', { name: /search/i }));
+    await user.type(screen.getByLabelText('Search'), 'Toyota');
+    await user.click(screen.getByRole('button', { name: /^search$/i }));
     expect(onFilter).toHaveBeenCalledWith({ make: 'Toyota', category: '' });
   });
 
@@ -46,10 +49,9 @@ describe('VehicleFilters', () => {
     const user = userEvent.setup();
     const onFilter = vi.fn();
     render(<VehicleFilters onFilter={onFilter} />);
-    await user.type(screen.getByRole('searchbox'), 'Toyota');
-    const clearButtons = screen.getAllByRole('button', { name: /clear/i });
-    await user.click(clearButtons[clearButtons.length - 1]);
+    await user.type(screen.getByLabelText('Search'), 'Toyota');
+    await user.click(screen.getByRole('button', { name: /clear search/i }));
     expect(onFilter).toHaveBeenCalledWith({ make: '', category: '' });
-    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.getByLabelText('Search')).toHaveValue('');
   });
 });

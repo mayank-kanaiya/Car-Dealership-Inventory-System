@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import SearchBar from '../../../components/SearchBar/SearchBar';
+import { Search, X } from 'lucide-react';
 import Button from '../../../components/Button/Button';
 import { VEHICLE_CATEGORIES } from '../../../constants/vehicleCategories';
 
@@ -24,24 +24,42 @@ function VehicleFilters({ onFilter, initialFilters = {} }) {
 
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-end">
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full relative">
         <label
           htmlFor="vehicle-search"
-          className="block text-sm font-medium text-text-secondary mb-1"
+          className="block text-sm font-medium text-text-secondary mb-1.5"
         >
           Search
         </label>
-        <SearchBar
-          value={make}
-          onChange={setMake}
-          placeholder="Search by make..."
-          onKeyDown={handleKeyDown}
-        />
+        <div className="relative">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input
+            id="vehicle-search"
+            type="text"
+            value={make}
+            onChange={(e) => setMake(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search by make..."
+            className="w-full pl-10 pr-3 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+          />
+          {make && (
+            <button
+              onClick={() => {
+                setMake('');
+                onFilter({ make: '', category });
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer"
+              aria-label="Clear search"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
       </div>
       <div className="w-full sm:w-48">
         <label
           htmlFor="category-filter"
-          className="block text-sm font-medium text-text-secondary mb-1"
+          className="block text-sm font-medium text-text-secondary mb-1.5"
         >
           Category
         </label>
@@ -52,7 +70,7 @@ function VehicleFilters({ onFilter, initialFilters = {} }) {
             setCategory(e.target.value);
             onFilter({ make: make.trim(), category: e.target.value });
           }}
-          className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+          className="w-full px-3 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         >
           <option value="">All Categories</option>
           {VEHICLE_CATEGORIES.map((cat) => (
@@ -63,12 +81,14 @@ function VehicleFilters({ onFilter, initialFilters = {} }) {
         </select>
       </div>
       <div className="flex gap-2">
-        <Button variant="primary" size="sm" onClick={handleSearch}>
+        <Button variant="primary" size="md" onClick={handleSearch}>
           Search
         </Button>
-        <Button variant="ghost" size="sm" onClick={handleClear}>
-          Clear
-        </Button>
+        {(make || category) && (
+          <Button variant="ghost" size="md" onClick={handleClear}>
+            Clear
+          </Button>
+        )}
       </div>
     </div>
   );

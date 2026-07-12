@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -16,39 +17,43 @@ import { CreateVehiclePage, EditVehiclePage } from './pages/VehicleFormPages';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <ErrorBoundary>
-            <Toaster position="top-right" />
-            <Routes>
-              <Route element={<GuestRoute />}>
-                <Route element={<AuthLayout />}>
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-                </Route>
-              </Route>
-
-              <Route element={<ProtectedRoute />}>
-                <Route element={<MainLayout />}>
-                  <Route path="/vehicles" element={<VehicleListPage />} />
-                  <Route path="/vehicles/new" element={<CreateVehiclePage />} />
-                  <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
-                  <Route path="/vehicles/:id/edit" element={<EditVehiclePage />} />
-                  <Route element={<AdminRoute />}>
-                    <Route path="/admin" element={<AdminDashboardPage />} />
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <AuthProvider>
+            <ErrorBoundary>
+              <Toaster position="top-right" />
+              <Routes>
+                <Route element={<GuestRoute />}>
+                  <Route element={<AuthLayout />}>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
                   </Route>
                 </Route>
-              </Route>
 
-              <Route path="/404" element={<NotFoundPage />} />
-              <Route path="*" element={<Navigate to="/404" replace />} />
-            </Routes>
-          </ErrorBoundary>
-        </AuthProvider>
-      </ThemeProvider>
+                <Route element={<ProtectedRoute />}>
+                  <Route element={<MainLayout />}>
+                    <Route path="/vehicles" element={<VehicleListPage />} />
+                    <Route path="/vehicles/new" element={<CreateVehiclePage />} />
+                    <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
+                    <Route path="/vehicles/:id/edit" element={<EditVehiclePage />} />
+                    <Route element={<AdminRoute />}>
+                      <Route path="/admin" element={<AdminDashboardPage />} />
+                    </Route>
+                  </Route>
+                </Route>
+
+                <Route path="/404" element={<NotFoundPage />} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
+              </Routes>
+            </ErrorBoundary>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   );
 }

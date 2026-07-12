@@ -45,27 +45,29 @@ function VehicleForm({ vehicle, onSubmit, onCancel, isSubmitting = false }) {
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
-      <Input
-        label="Make"
-        {...register('make')}
-        error={errors.make?.message}
-        placeholder="e.g. Toyota"
-      />
-      <Input
-        label="Model"
-        {...register('model')}
-        error={errors.model?.message}
-        placeholder="e.g. Camry"
-      />
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <Input
+          label="Make"
+          {...register('make')}
+          error={errors.make?.message}
+          placeholder="e.g. Toyota"
+        />
+        <Input
+          label="Model"
+          {...register('model')}
+          error={errors.model?.message}
+          placeholder="e.g. Camry"
+        />
+      </div>
       <div>
-        <label htmlFor="category" className="block text-sm font-medium text-text-secondary mb-1">
+        <label htmlFor="category" className="block text-sm font-medium text-text-primary mb-1.5">
           Category
         </label>
         <select
           id="category"
           {...register('category')}
-          className="w-full px-3 py-2 text-sm border rounded-lg bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+          className="w-full px-3 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
           style={{ borderColor: errors.category ? '#ef4444' : undefined }}
         >
           <option value="">Select a category</option>
@@ -79,21 +81,23 @@ function VehicleForm({ vehicle, onSubmit, onCancel, isSubmitting = false }) {
           <p className="text-xs text-danger mt-1">{errors.category.message}</p>
         )}
       </div>
-      <Input
-        label="Price"
-        type="number"
-        step="0.01"
-        {...register('price')}
-        error={errors.price?.message}
-        placeholder="e.g. 28500"
-      />
-      <Input
-        label="Quantity in Stock"
-        type="number"
-        {...register('quantityInStock')}
-        error={errors.quantityInStock?.message}
-        placeholder="e.g. 10"
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <Input
+          label="Price"
+          type="number"
+          step="0.01"
+          {...register('price')}
+          error={errors.price?.message}
+          placeholder="e.g. 28500"
+        />
+        <Input
+          label="Quantity in Stock"
+          type="number"
+          {...register('quantityInStock')}
+          error={errors.quantityInStock?.message}
+          placeholder="e.g. 10"
+        />
+      </div>
       <div className="flex gap-3 pt-2">
         <Button type="submit" variant="primary" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : isEditing ? 'Update Vehicle' : 'Create Vehicle'}

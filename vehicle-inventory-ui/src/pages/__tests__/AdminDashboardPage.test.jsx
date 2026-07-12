@@ -35,8 +35,8 @@ describe('AdminDashboardPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
     });
-    expect(screen.getAllByText(/edit/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/sell/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/restock/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/edit/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/sell/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/restock/i).length).toBeGreaterThan(0);
   });
 });
