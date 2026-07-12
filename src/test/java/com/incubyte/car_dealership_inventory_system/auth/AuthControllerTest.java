@@ -1,6 +1,7 @@
 package com.incubyte.car_dealership_inventory_system.auth;
 
 import tools.jackson.databind.ObjectMapper;
+import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationRequest; // DOES NOT EXIST YET (RED Phase)
 import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationResponse;
 import com.incubyte.car_dealership_inventory_system.auth.dto.RegistrationRequest;
 import com.incubyte.car_dealership_inventory_system.security.CustomUserDetailsService;
@@ -14,6 +15,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException; // Will be used for login failures
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +44,10 @@ class AuthControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
+
+    // =========================================================================
+    // REGISTRATION TESTS
+    // =========================================================================
 
     @Test
     @DisplayName("Should register a user when the request is valid")
@@ -173,6 +179,79 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.fullName").value("Full Name is required"))
                 .andExpect(jsonPath("$.email").value("Email is required"))
+                .andExpect(jsonPath("$.password").value("Password is required"));
+    }
+
+    // =========================================================================
+    // LOGIN TESTS 
+    // =========================================================================
+
+    @Test
+    @DisplayName("Should login a user and return a token when credentials are valid")
+    void shouldLoginSuccessfully() throws Exception {
+        AuthenticationRequest request = new AuthenticationRequest(
+                "john.doe@dealership.com",
+                "password123"
+        );
+
+        when(authService.login(any(AuthenticationRequest.class)))
+                .thenReturn(new AuthenticationResponse("Login successful", "valid-jwt-token"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Login successful"))
+                .andExpect(jsonPath("$.token").value("valid-jwt-token"));
+
+        verify(authService).login(request);
+    }
+
+    @Test
+    @DisplayName("Should return 401 Unauthorized when credentials are invalid")
+    void shouldReturnUnauthorizedForBadCredentials() throws Exception {
+        AuthenticationRequest request = new AuthenticationRequest(
+                "john.doe@dealership.com",
+                "wrongpassword"
+        );
+
+        when(authService.login(any(AuthenticationRequest.class)))
+                .thenThrow(new BadCredentialsException("Invalid email or password"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error").value("Invalid email or password"));
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when login email is missing")
+    void shouldReturnBadRequestWhenLoginEmailIsMissing() throws Exception {
+        AuthenticationRequest request = new AuthenticationRequest(
+                "",
+                "password123"
+        );
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value("Email is required"));
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request when login password is missing")
+    void shouldReturnBadRequestWhenLoginPasswordIsMissing() throws Exception {
+        AuthenticationRequest request = new AuthenticationRequest(
+                "john.doe@dealership.com",
+                ""
+        );
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.password").value("Password is required"));
     }
 }
