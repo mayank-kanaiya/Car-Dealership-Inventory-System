@@ -1068,4 +1068,290 @@ class VehicleControllerTest {
                     .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
         }
     }
+
+    // =========================================================================
+    // GET /api/vehicles/search
+    // =========================================================================
+
+    @Nested
+    @DisplayName("GET /api/vehicles/search")
+    class SearchVehicles {
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with matching vehicles when searching by make")
+        void shouldReturnVehiclesWhenSearchingByMake() throws Exception {
+            VehicleResponse vehicle1 = createVehicleResponse(
+                    UUID.randomUUID(), "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 5);
+            VehicleResponse vehicle2 = createVehicleResponse(
+                    UUID.randomUUID(), "Toyota", "Corolla", VehicleCategory.HATCHBACK,
+                    new BigDecimal("22000.00"), 8);
+
+            when(vehicleService.searchVehicles(eq("Toyota"), eq(null), eq(null),
+                    eq(null), eq(null)))
+                    .thenReturn(List.of(vehicle1, vehicle2));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("make", "Toyota"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(2))
+                    .andExpect(jsonPath("$[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$[1].model").value("Corolla"));
+
+            verify(vehicleService).searchVehicles(eq("Toyota"), eq(null), eq(null),
+                    eq(null), eq(null));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with matching vehicles when searching by model")
+        void shouldReturnVehiclesWhenSearchingByModel() throws Exception {
+            VehicleResponse vehicle = createVehicleResponse(
+                    UUID.randomUUID(), "Honda", "Civic", VehicleCategory.SEDAN,
+                    new BigDecimal("25000.00"), 3);
+
+            when(vehicleService.searchVehicles(eq(null), eq("Civic"), eq(null),
+                    eq(null), eq(null)))
+                    .thenReturn(List.of(vehicle));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("model", "Civic"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].model").value("Civic"));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with matching vehicles when searching by category")
+        void shouldReturnVehiclesWhenSearchingByCategory() throws Exception {
+            VehicleResponse suv1 = createVehicleResponse(
+                    UUID.randomUUID(), "Toyota", "RAV4", VehicleCategory.SUV,
+                    new BigDecimal("35000.00"), 4);
+            VehicleResponse suv2 = createVehicleResponse(
+                    UUID.randomUUID(), "Honda", "CR-V", VehicleCategory.SUV,
+                    new BigDecimal("32000.00"), 6);
+
+            when(vehicleService.searchVehicles(eq(null), eq(null), eq(VehicleCategory.SUV),
+                    eq(null), eq(null)))
+                    .thenReturn(List.of(suv1, suv2));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("category", "SUV"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(2))
+                    .andExpect(jsonPath("$[0].category").value("SUV"))
+                    .andExpect(jsonPath("$[1].category").value("SUV"));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with matching vehicles when searching by minPrice")
+        void shouldReturnVehiclesWhenSearchingByMinPrice() throws Exception {
+            VehicleResponse vehicle = createVehicleResponse(
+                    UUID.randomUUID(), "BMW", "X5", VehicleCategory.SUV,
+                    new BigDecimal("65000.00"), 2);
+
+            when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
+                    eq(new BigDecimal("50000.00")), eq(null)))
+                    .thenReturn(List.of(vehicle));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("minPrice", "50000.00"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].make").value("BMW"));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with matching vehicles when searching by maxPrice")
+        void shouldReturnVehiclesWhenSearchingByMaxPrice() throws Exception {
+            VehicleResponse vehicle = createVehicleResponse(
+                    UUID.randomUUID(), "Honda", "Civic", VehicleCategory.SEDAN,
+                    new BigDecimal("25000.00"), 7);
+
+            when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
+                    eq(null), eq(new BigDecimal("30000.00"))))
+                    .thenReturn(List.of(vehicle));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("maxPrice", "30000.00"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].model").value("Civic"));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with matching vehicles when searching by price range")
+        void shouldReturnVehiclesWhenSearchingByPriceRange() throws Exception {
+            VehicleResponse vehicle1 = createVehicleResponse(
+                    UUID.randomUUID(), "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 5);
+            VehicleResponse vehicle2 = createVehicleResponse(
+                    UUID.randomUUID(), "Honda", "Accord", VehicleCategory.SEDAN,
+                    new BigDecimal("32000.00"), 3);
+
+            when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
+                    eq(new BigDecimal("25000.00")), eq(new BigDecimal("35000.00"))))
+                    .thenReturn(List.of(vehicle1, vehicle2));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("minPrice", "25000.00")
+                            .param("maxPrice", "35000.00"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(2));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with matching vehicles when searching with multiple filters")
+        void shouldReturnVehiclesWhenSearchingWithMultipleFilters() throws Exception {
+            VehicleResponse vehicle = createVehicleResponse(
+                    UUID.randomUUID(), "Toyota", "RAV4", VehicleCategory.SUV,
+                    new BigDecimal("35000.00"), 4);
+
+            when(vehicleService.searchVehicles(eq("Toyota"), eq(null), eq(VehicleCategory.SUV),
+                    eq(new BigDecimal("30000.00")), eq(new BigDecimal("40000.00"))))
+                    .thenReturn(List.of(vehicle));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("make", "Toyota")
+                            .param("category", "SUV")
+                            .param("minPrice", "30000.00")
+                            .param("maxPrice", "40000.00"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$[0].model").value("RAV4"))
+                    .andExpect(jsonPath("$[0].category").value("SUV"));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with empty list when no vehicles match")
+        void shouldReturnEmptyListWhenNoVehiclesMatch() throws Exception {
+            when(vehicleService.searchVehicles(eq("Ferrari"), eq(null), eq(null),
+                    eq(null), eq(null)))
+                    .thenReturn(Collections.emptyList());
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("make", "Ferrari"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(0));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 200 with all vehicles when no search params provided")
+        void shouldReturnAllVehiclesWhenNoSearchParamsProvided() throws Exception {
+            VehicleResponse vehicle1 = createVehicleResponse(
+                    UUID.randomUUID(), "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 5);
+            VehicleResponse vehicle2 = createVehicleResponse(
+                    UUID.randomUUID(), "Honda", "Civic", VehicleCategory.HATCHBACK,
+                    new BigDecimal("22000.00"), 8);
+
+            when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
+                    eq(null), eq(null)))
+                    .thenReturn(List.of(vehicle1, vehicle2));
+
+            mockMvc.perform(get("/api/vehicles/search"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(2));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should call service with correct parameters")
+        void shouldCallServiceWithCorrectParameters() throws Exception {
+            when(vehicleService.searchVehicles(any(), any(), any(), any(), any()))
+                    .thenReturn(Collections.emptyList());
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("make", "Toyota")
+                            .param("model", "Camry")
+                            .param("category", "SEDAN")
+                            .param("minPrice", "20000.00")
+                            .param("maxPrice", "30000.00"))
+                    .andExpect(status().isOk());
+
+            verify(vehicleService).searchVehicles(
+                    eq("Toyota"), eq("Camry"), eq(VehicleCategory.SEDAN),
+                    eq(new BigDecimal("20000.00")), eq(new BigDecimal("30000.00")));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return empty list when minPrice is greater than maxPrice")
+        void shouldReturnEmptyListWhenMinPriceExceedsMaxPrice() throws Exception {
+            when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
+                    eq(new BigDecimal("50000.00")), eq(new BigDecimal("10000.00"))))
+                    .thenReturn(Collections.emptyList());
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("minPrice", "50000.00")
+                            .param("maxPrice", "10000.00"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(0));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return empty list when maxPrice is negative and no vehicles match")
+        void shouldReturnEmptyListWhenMaxPriceIsNegative() throws Exception {
+            when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
+                    eq(null), eq(new BigDecimal("-500.00"))))
+                    .thenReturn(Collections.emptyList());
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("maxPrice", "-500.00"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(0));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 400 when minPrice is not a valid number")
+        void shouldReturnBadRequestWhenMinPriceIsNotValidNumber() throws Exception {
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("minPrice", "abc"))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return 400 when category is invalid enum value")
+        void shouldReturnBadRequestWhenCategoryIsInvalidEnumValue() throws Exception {
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("category", "INVALID_CATEGORY"))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("Should return response body with correct structure")
+        void shouldReturnResponseBodyWithCorrectStructure() throws Exception {
+            UUID id = UUID.randomUUID();
+            VehicleResponse vehicle = createVehicleResponse(
+                    id, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 5);
+
+            when(vehicleService.searchVehicles(eq("Toyota"), eq(null), eq(null),
+                    eq(null), eq(null)))
+                    .thenReturn(List.of(vehicle));
+
+            mockMvc.perform(get("/api/vehicles/search")
+                            .param("make", "Toyota"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].id").value(id.toString()))
+                    .andExpect(jsonPath("$[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$[0].model").value("Camry"))
+                    .andExpect(jsonPath("$[0].category").value("SEDAN"))
+                    .andExpect(jsonPath("$[0].price").value(28000.00))
+                    .andExpect(jsonPath("$[0].quantityInStock").value(5));
+        }
+    }
 }
