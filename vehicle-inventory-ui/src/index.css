@@ -17,6 +17,16 @@
   --color-text-muted: #9ca3af;
 }
 
+.dark {
+  --color-surface: #1f2937;
+  --color-surface-hover: #374151;
+  --color-border: #374151;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-primary-light: #312e81;
+}
+
 *,
 *::before,
 *::after {

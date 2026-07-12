@@ -4,9 +4,9 @@ import '@testing-library/jest-dom/vitest';
 import App from '../App';
 
 describe('App Component', () => {
-  it('renders without crashing and redirects to login', () => {
+  it('renders 404 page for unknown routes', () => {
     render(<App />);
-    expect(screen.getByText(/vehicle inventory/i)).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByText(/404/i)).toBeInTheDocument();
+    expect(screen.getByText(/page not found/i)).toBeInTheDocument();
   });
 });
