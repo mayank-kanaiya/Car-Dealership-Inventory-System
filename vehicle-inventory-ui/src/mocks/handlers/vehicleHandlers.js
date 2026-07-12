@@ -204,4 +204,24 @@ export const vehicleHandlers = [
     vehicle.quantityInStock += body.quantity;
     return HttpResponse.json(vehicle);
   }),
+
+  http.post('*/api/v1/vehicles/:id/image', async ({ params }) => {
+    const vehicle = vehicles.find((v) => v.id === params.id);
+    if (!vehicle) {
+      return HttpResponse.json(
+        {
+          timestamp: new Date().toISOString(),
+          status: 404,
+          error: 'Not Found',
+          message: `Vehicle not found with id: ${params.id}`,
+          path: `/api/v1/vehicles/${params.id}/image`,
+          errorCode: 'RESOURCE_NOT_FOUND',
+          details: null,
+        },
+        { status: 404 }
+      );
+    }
+    vehicle.imageUrl = 'https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/uploaded-image.jpg';
+    return HttpResponse.json(vehicle);
+  }),
 ];

@@ -33,6 +33,9 @@ export default [
         btoa: 'readonly',
         atob: 'readonly',
         navigator: 'readonly',
+        FileReader: 'readonly',
+        FormData: 'readonly',
+        File: 'readonly',
       },
     },
     rules: {

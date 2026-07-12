@@ -48,6 +48,15 @@ const vehicleService = {
     const response = await apiClient.post(`/vehicles/${id}/restock`, { quantity });
     return response.data;
   },
+
+  async uploadImage(id, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post(`/vehicles/${id}/image`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 };
 
 export default vehicleService;
