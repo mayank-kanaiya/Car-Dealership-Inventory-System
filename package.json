@@ -1,0 +1,26 @@
+{
+  "name": "car-dealership-inventory-system",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm run lint --prefix vehicle-inventory-ui",
+    "lint:fix": "npm run lint:fix --prefix vehicle-inventory-ui",
+    "format": "npm run format --prefix vehicle-inventory-ui",
+    "format:check": "npm run format:check --prefix vehicle-inventory-ui",
+    "test": "npm test --prefix vehicle-inventory-ui",
+    "test:coverage": "npm run test:coverage --prefix vehicle-inventory-ui"
+  },
+  "devDependencies": {
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "vehicle-inventory-ui/src/**/*.{js,jsx}": [
+      "eslint --fix --config vehicle-inventory-ui/eslint.config.js",
+      "prettier --write"
+    ],
+    "vehicle-inventory-ui/src/**/*.{css,json,md}": [
+      "prettier --write"
+    ]
+  }
+}
