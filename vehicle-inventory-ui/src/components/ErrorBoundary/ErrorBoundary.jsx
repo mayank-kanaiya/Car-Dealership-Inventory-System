@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AlertTriangle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { AlertTriangle, Home } from 'lucide-react';
 import Button from '../Button/Button';
 
 class ErrorBoundary extends Component {
@@ -32,9 +33,18 @@ class ErrorBoundary extends Component {
           <p className="text-sm text-text-secondary mb-6 max-w-md">
             {this.state.error?.message || 'An unexpected error occurred. Please try again.'}
           </p>
-          <Button onClick={this.handleRetry} variant="primary">
-            Try Again
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={this.handleRetry} variant="primary">
+              Try Again
+            </Button>
+            <Link
+              to="/vehicles"
+              className="inline-flex items-center gap-2 font-medium rounded-xl transition-all duration-150 bg-transparent text-text-primary hover:bg-surface-hover border border-border px-4 py-2.5 text-sm"
+            >
+              <Home size={16} />
+              Go Home
+            </Link>
+          </div>
         </div>
       );
     }

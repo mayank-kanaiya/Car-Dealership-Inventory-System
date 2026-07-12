@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Moon, Sun, Menu, X, Car, LayoutDashboard, Shield, LogOut } from 'lucide-react';
 import { useAuth } from '../features/auth/hooks/useAuth';
@@ -10,6 +10,18 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [mobileOpen]);
 
   const handleLogout = () => {
     logout();
@@ -86,42 +98,48 @@ function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-surface">
-          <div className="px-4 py-3 space-y-1">
-            <Link
-              to="/vehicles"
-              className={navLinkClass('/vehicles')}
-              onClick={() => setMobileOpen(false)}
-            >
-              <LayoutDashboard size={16} />
-              Inventory
-            </Link>
-            {isAdmin && (
+        <div className="md:hidden fixed inset-x-0 top-16 bottom-0 z-30">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <div
+            ref={menuRef}
+            className="relative border-t border-border bg-surface shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto"
+          >
+            <div className="px-4 py-3 space-y-1">
               <Link
-                to="/admin"
-                className={navLinkClass('/admin')}
+                to="/vehicles"
+                className={navLinkClass('/vehicles')}
                 onClick={() => setMobileOpen(false)}
               >
-                <Shield size={16} />
-                Admin
+                <LayoutDashboard size={16} />
+                Inventory
               </Link>
-            )}
-            <div className="border-t border-border mt-2 pt-2">
-              <div className="flex items-center gap-3 px-3 py-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-semibold text-primary">
-                    {user?.fullName?.charAt(0) || 'U'}
-                  </span>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className={navLinkClass('/admin')}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Shield size={16} />
+                  Admin
+                </Link>
+              )}
+              <div className="border-t border-border mt-2 pt-2">
+                <div className="flex items-center gap-3 px-3 py-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-sm font-semibold text-primary">
+                      {user?.fullName?.charAt(0) || 'U'}
+                    </span>
+                  </div>
+                  <span className="text-sm text-text-secondary">{user?.fullName}</span>
                 </div>
-                <span className="text-sm text-text-secondary">{user?.fullName}</span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
+                >
+                  <LogOut size={15} />
+                  Logout
+                </button>
               </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-danger hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
-              >
-                <LogOut size={15} />
-                Logout
-              </button>
             </div>
           </div>
         </div>

@@ -108,4 +108,10 @@ function EditVehiclePage() {
   );
 }
 
+function VehicleFormPage() {
+  const { id } = useParams();
+  return id ? <EditVehiclePage /> : <CreateVehiclePage />;
+}
+
+export default VehicleFormPage;
 export { CreateVehiclePage, EditVehiclePage };

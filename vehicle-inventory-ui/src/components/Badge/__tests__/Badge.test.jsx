@@ -39,6 +39,12 @@ describe('Badge Component', () => {
     expect(badge.className).toContain('bg-primary');
   });
 
+  it('renders info variant', () => {
+    render(<Badge variant="info">Info</Badge>);
+    const badge = screen.getByText(/info/i);
+    expect(badge.className).toContain('bg-blue-100');
+  });
+
   it('renders small size', () => {
     render(<Badge size="sm">Small</Badge>);
     const badge = screen.getByText(/small/i);

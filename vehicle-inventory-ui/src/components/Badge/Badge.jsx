@@ -6,6 +6,7 @@ const variantStyles = {
   success: 'bg-green-100 text-success',
   danger: 'bg-red-100 text-danger',
   warning: 'bg-amber-100 text-warning',
+  info: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
 };
 
 const sizeStyles = {
@@ -26,7 +27,7 @@ function Badge({ children, variant = 'default', size = 'md', className = '' }) {
 
 Badge.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(['default', 'primary', 'success', 'danger', 'warning']),
+  variant: PropTypes.oneOf(['default', 'primary', 'success', 'danger', 'warning', 'info']),
   size: PropTypes.oneOf(['sm', 'md', 'lg']),
   className: PropTypes.string,
 };

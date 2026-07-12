@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import ErrorBoundary from '../ErrorBoundary';
@@ -10,6 +11,10 @@ function ThrowingComponent({ shouldThrow = true }) {
   return <div>Child content</div>;
 }
 
+function renderWithRouter(ui) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
+
 describe('ErrorBoundary', () => {
   const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -18,7 +23,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders children when no error occurs', () => {
-    render(
+    renderWithRouter(
       <ErrorBoundary>
         <ThrowingComponent shouldThrow={false} />
       </ErrorBoundary>
@@ -27,7 +32,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders fallback UI when an error occurs', () => {
-    render(
+    renderWithRouter(
       <ErrorBoundary>
         <ThrowingComponent />
       </ErrorBoundary>
@@ -37,7 +42,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('displays error message in fallback', () => {
-    render(
+    renderWithRouter(
       <ErrorBoundary>
         <ThrowingComponent />
       </ErrorBoundary>
@@ -46,7 +51,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('provides a retry button that resets the error', async () => {
-    const { rerender } = render(
+    const { rerender } = renderWithRouter(
       <ErrorBoundary>
         <ThrowingComponent shouldThrow />
       </ErrorBoundary>
@@ -54,9 +59,11 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
 
     rerender(
-      <ErrorBoundary>
-        <ThrowingComponent shouldThrow={false} />
-      </ErrorBoundary>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <ThrowingComponent shouldThrow={false} />
+        </ErrorBoundary>
+      </MemoryRouter>
     );
     const retryButton = screen.getByRole('button', { name: /try again/i });
     retryButton.click();
@@ -65,8 +72,17 @@ describe('ErrorBoundary', () => {
     });
   });
 
+  it('renders Go Home link', () => {
+    renderWithRouter(
+      <ErrorBoundary>
+        <ThrowingComponent />
+      </ErrorBoundary>
+    );
+    expect(screen.getByRole('link', { name: /go home/i })).toHaveAttribute('href', '/vehicles');
+  });
+
   it('logs error to console', () => {
-    render(
+    renderWithRouter(
       <ErrorBoundary>
         <ThrowingComponent />
       </ErrorBoundary>

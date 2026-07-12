@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 
@@ -11,6 +11,9 @@ const sizeStyles = {
 };
 
 function Modal({ isOpen, onClose, title, children, size = 'md' }) {
+  const dialogRef = useRef(null);
+  const previousFocusRef = useRef(null);
+
   const handleEscape = useCallback(
     (e) => {
       if (e.key === 'Escape') onClose();
@@ -18,16 +21,52 @@ function Modal({ isOpen, onClose, title, children, size = 'md' }) {
     [onClose]
   );
 
+  const handleTabTrap = useCallback((e) => {
+    if (e.key !== 'Tab' || !dialogRef.current) return;
+    const focusable = dialogRef.current.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
+      previousFocusRef.current = document.activeElement;
       document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', handleTabTrap);
       document.body.style.overflow = 'hidden';
+      // eslint-disable-next-line no-undef
+      requestAnimationFrame(() => {
+        if (dialogRef.current) {
+          const firstInput = dialogRef.current.querySelector(
+            'input, select, textarea, button:not([aria-label="Close"])'
+          );
+          if (firstInput) firstInput.focus();
+        }
+      });
     }
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleTabTrap);
       document.body.style.overflow = '';
+      if (previousFocusRef.current && previousFocusRef.current.focus) {
+        previousFocusRef.current.focus();
+      }
     };
-  }, [isOpen, handleEscape]);
+  }, [isOpen, handleEscape, handleTabTrap]);
 
   if (!isOpen) return null;
 
@@ -39,6 +78,7 @@ function Modal({ isOpen, onClose, title, children, size = 'md' }) {
         onClick={onClose}
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

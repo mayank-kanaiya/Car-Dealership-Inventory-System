@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom/vitest';
@@ -55,8 +55,17 @@ describe('VehicleCard', () => {
     expect(img).toHaveAttribute('src', 'https://example.com/camry.jpg');
   });
 
-  it('has clickable article role', () => {
+  it('has link role and is keyboard accessible', () => {
     renderVehicleCard();
-    expect(screen.getByRole('article', { name: /toyota camry/i })).toBeInTheDocument();
+    const card = screen.getByRole('link', { name: /toyota camry/i });
+    expect(card).toBeInTheDocument();
+    expect(card).toHaveAttribute('tabIndex', '0');
+  });
+
+  it('shows image placeholder on error', async () => {
+    renderVehicleCard();
+    const img = screen.getByRole('img', { name: /toyota camry/i });
+    fireEvent.error(img);
+    expect(await screen.findByText('No image')).toBeInTheDocument();
   });
 });

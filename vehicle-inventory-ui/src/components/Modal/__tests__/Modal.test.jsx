@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
@@ -94,5 +94,24 @@ describe('Modal Component', () => {
     );
     const dialog = screen.getByRole('dialog');
     expect(dialog.className).toContain('max-w-lg');
+  });
+
+  it('traps focus inside the modal', async () => {
+    const user = userEvent.setup();
+    render(
+      <Modal isOpen={true} onClose={vi.fn()} title="Test">
+        <button>First</button>
+        <button>Second</button>
+      </Modal>
+    );
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /first/i })).toHaveFocus();
+    });
+    await user.tab();
+    expect(screen.getByRole('button', { name: /second/i })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByLabelText(/close/i)).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole('button', { name: /first/i })).toHaveFocus();
   });
 });

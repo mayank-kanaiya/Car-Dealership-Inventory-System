@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, ImageOff } from 'lucide-react';
 import { useVehicleDetail } from '../features/vehicles/hooks/useVehicles';
 import Spinner from '../components/Spinner/Spinner';
 import ErrorDisplay from '../components/ErrorDisplay/ErrorDisplay';
@@ -11,6 +12,7 @@ function VehicleDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: vehicle, isLoading, error } = useVehicleDetail(id);
+  const [imgError, setImgError] = useState(false);
 
   if (isLoading) {
     return (
@@ -43,14 +45,19 @@ function VehicleDetailPage() {
       <div className="bg-surface rounded-2xl border border-border overflow-hidden">
         <div className="md:flex">
           <div className="md:w-1/2 bg-gradient-to-br from-surface-secondary to-gray-200 dark:to-gray-800">
-            <img
-              src={vehicle.imageUrl || '/images/default-vehicle.svg'}
-              alt={`${vehicle.make} ${vehicle.model}`}
-              className="w-full h-full object-cover min-h-[300px]"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
+            {imgError ? (
+              <div className="w-full h-full min-h-[300px] flex flex-col items-center justify-center gap-2 text-text-muted">
+                <ImageOff size={48} strokeWidth={1.5} />
+                <span className="text-sm">No image available</span>
+              </div>
+            ) : (
+              <img
+                src={vehicle.imageUrl || '/images/default-vehicle.svg'}
+                alt={`${vehicle.make} ${vehicle.model}`}
+                className="w-full h-full object-cover min-h-[300px]"
+                onError={() => setImgError(true)}
+              />
+            )}
           </div>
           <div className="p-6 sm:p-8 md:w-1/2 flex flex-col justify-center">
             <div className="flex items-center gap-3 mb-2">
