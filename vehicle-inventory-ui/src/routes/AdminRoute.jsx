@@ -1,9 +1,8 @@
-import { Navigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import Spinner from '../components/Spinner/Spinner';
 
-function AdminRoute({ children }) {
+function AdminRoute() {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
 
   if (isLoading) {
@@ -19,14 +18,10 @@ function AdminRoute({ children }) {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/vehicles" replace />;
   }
 
-  return children;
+  return <Outlet />;
 }
-
-AdminRoute.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export default AdminRoute;

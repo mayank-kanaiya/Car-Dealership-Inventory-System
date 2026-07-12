@@ -221,7 +221,8 @@ export const vehicleHandlers = [
         { status: 404 }
       );
     }
-    vehicle.imageUrl = 'https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/uploaded-image.jpg';
+    vehicle.imageUrl =
+      'https://res.cloudinary.com/demo/image/upload/car-dealership/vehicles/uploaded-image.jpg';
     return HttpResponse.json(vehicle);
   }),
 ];

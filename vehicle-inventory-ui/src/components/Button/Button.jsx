@@ -40,7 +40,10 @@ function Button({
       {...rest}
     >
       {isLoading ? (
-        <span data-testid="button-spinner" className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+        <span
+          data-testid="button-spinner"
+          className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"
+        />
       ) : icon ? (
         <span className="shrink-0">{icon}</span>
       ) : null}

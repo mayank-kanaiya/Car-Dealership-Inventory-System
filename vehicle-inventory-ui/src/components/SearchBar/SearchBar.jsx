@@ -4,7 +4,10 @@ import { Search, X } from 'lucide-react';
 function SearchBar({ value, onChange, placeholder = 'Search...', className = '' }) {
   return (
     <div className={`relative ${className}`}>
-      <span data-testid="search-icon" className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+      <span
+        data-testid="search-icon"
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+      >
         <Search size={18} />
       </span>
       <input

@@ -8,7 +8,10 @@ function LoginPage() {
       <LoginForm />
       <p className="text-center text-sm text-text-secondary mt-6">
         Don&apos;t have an account?{' '}
-        <Link to="/register" className="text-primary hover:text-primary-hover font-medium transition-colors">
+        <Link
+          to="/register"
+          className="text-primary hover:text-primary-hover font-medium transition-colors"
+        >
           Create one
         </Link>
       </p>

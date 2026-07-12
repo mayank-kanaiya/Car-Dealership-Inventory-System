@@ -18,7 +18,8 @@ const categoryBadgeVariant = {
 
 function VehicleCard({ vehicle }) {
   const navigate = useNavigate();
-  const categoryLabel = VEHICLE_CATEGORIES.find((c) => c.value === vehicle.category)?.label || vehicle.category;
+  const categoryLabel =
+    VEHICLE_CATEGORIES.find((c) => c.value === vehicle.category)?.label || vehicle.category;
 
   return (
     <div
@@ -32,7 +33,9 @@ function VehicleCard({ vehicle }) {
           src={vehicle.imageUrl || '/images/default-vehicle.svg'}
           alt={`${vehicle.make} ${vehicle.model}`}
           className="w-full h-full object-cover"
-          onError={(e) => { e.target.src = '/images/default-vehicle.svg'; }}
+          onError={(e) => {
+            e.target.src = '/images/default-vehicle.svg';
+          }}
         />
       </div>
       <div className="p-4">
@@ -40,13 +43,17 @@ function VehicleCard({ vehicle }) {
           <h3 className="text-lg font-semibold text-text-primary truncate">
             {vehicle.make} {vehicle.model}
           </h3>
-          <Badge variant={categoryBadgeVariant[vehicle.category] || 'default'}>{categoryLabel}</Badge>
+          <Badge variant={categoryBadgeVariant[vehicle.category] || 'default'}>
+            {categoryLabel}
+          </Badge>
         </div>
         <div className="flex items-baseline justify-between">
           <span className="text-xl font-bold text-primary">
             ${vehicle.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </span>
-          <span className={`text-sm font-medium ${vehicle.quantityInStock > 0 ? 'text-success' : 'text-danger'}`}>
+          <span
+            className={`text-sm font-medium ${vehicle.quantityInStock > 0 ? 'text-success' : 'text-danger'}`}
+          >
             {vehicle.quantityInStock > 0 ? `${vehicle.quantityInStock} in stock` : 'Out of stock'}
           </span>
         </div>

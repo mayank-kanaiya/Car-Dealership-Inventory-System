@@ -11,7 +11,10 @@ describe('ImageUpload', () => {
 
   it('renders preview when currentImageUrl provided', () => {
     render(<ImageUpload currentImageUrl="https://example.com/car.jpg" onFileSelect={vi.fn()} />);
-    expect(screen.getByRole('img', { name: /preview/i })).toHaveAttribute('src', 'https://example.com/car.jpg');
+    expect(screen.getByRole('img', { name: /preview/i })).toHaveAttribute(
+      'src',
+      'https://example.com/car.jpg'
+    );
   });
 
   it('calls onFileSelect when file chosen', () => {
@@ -25,7 +28,13 @@ describe('ImageUpload', () => {
 
   it('calls onRemove when remove button clicked', () => {
     const onRemove = vi.fn();
-    render(<ImageUpload currentImageUrl="https://example.com/car.jpg" onFileSelect={vi.fn()} onRemove={onRemove} />);
+    render(
+      <ImageUpload
+        currentImageUrl="https://example.com/car.jpg"
+        onFileSelect={vi.fn()}
+        onRemove={onRemove}
+      />
+    );
     fireEvent.click(screen.getByRole('button', { name: /remove image/i }));
     expect(onRemove).toHaveBeenCalled();
   });

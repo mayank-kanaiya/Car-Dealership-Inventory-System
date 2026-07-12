@@ -1,9 +1,8 @@
-import { Navigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import Spinner from '../components/Spinner/Spinner';
 
-function GuestRoute({ children }) {
+function GuestRoute() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -15,14 +14,10 @@ function GuestRoute({ children }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/vehicles" replace />;
   }
 
-  return children;
+  return <Outlet />;
 }
-
-GuestRoute.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export default GuestRoute;

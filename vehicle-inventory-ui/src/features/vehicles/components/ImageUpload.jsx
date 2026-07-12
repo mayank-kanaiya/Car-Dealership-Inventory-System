@@ -49,7 +49,9 @@ function ImageUpload({ currentImageUrl, onFileSelect, onRemove, disabled = false
           onClick={() => !disabled && inputRef.current?.click()}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter') inputRef.current?.click(); }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') inputRef.current?.click();
+          }}
           aria-label="Upload image"
         >
           <ImageIcon size={32} className="text-text-muted mb-2" />
@@ -67,12 +69,7 @@ function ImageUpload({ currentImageUrl, onFileSelect, onRemove, disabled = false
         aria-label="File input"
       />
       {!preview && !disabled && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => inputRef.current?.click()}
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={() => inputRef.current?.click()}>
           <Upload size={16} className="mr-1" /> Choose File
         </Button>
       )}

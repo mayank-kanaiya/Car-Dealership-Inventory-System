@@ -35,7 +35,11 @@ describe('authService', () => {
 
     it('throws error for duplicate email', async () => {
       await expect(
-        authService.register({ fullName: 'John', email: 'existing@example.com', password: 'pass1234' })
+        authService.register({
+          fullName: 'John',
+          email: 'existing@example.com',
+          password: 'pass1234',
+        })
       ).rejects.toThrow();
     });
   });
@@ -60,7 +64,13 @@ describe('authService', () => {
 
   describe('decodeToken', () => {
     it('decodes a valid JWT payload', () => {
-      const payload = { sub: '1', name: 'John Doe', email: 'john@example.com', role: 'USER', exp: 9999999999 };
+      const payload = {
+        sub: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        role: 'USER',
+        exp: 9999999999,
+      };
       const encoded = btoa(JSON.stringify(payload));
       const token = `header.${encoded}.sig`;
 
@@ -92,7 +102,13 @@ describe('authService', () => {
 
   describe('getUserFromToken', () => {
     it('returns user object from valid token', () => {
-      const payload = { sub: '1', name: 'John Doe', email: 'john@example.com', role: 'USER', exp: 9999999999 };
+      const payload = {
+        sub: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        role: 'USER',
+        exp: 9999999999,
+      };
       const encoded = btoa(JSON.stringify(payload));
       const token = `header.${encoded}.sig`;
 

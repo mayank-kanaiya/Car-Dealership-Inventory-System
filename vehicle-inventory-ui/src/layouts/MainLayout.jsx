@@ -19,11 +19,17 @@ function Navbar() {
             Vehicle Inventory
           </Link>
           <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+            <Link
+              to="/dashboard"
+              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+            >
               Dashboard
             </Link>
             {isAdmin && (
-              <Link to="/admin" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+              <Link
+                to="/admin"
+                className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+              >
                 Admin
               </Link>
             )}

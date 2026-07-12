@@ -4,8 +4,9 @@ import '@testing-library/jest-dom/vitest';
 import App from '../App';
 
 describe('App Component', () => {
-  it('renders the application heading', () => {
+  it('renders without crashing and redirects to login', () => {
     render(<App />);
-    expect(screen.getByRole('heading', { name: /vehicle inventory system/i })).toBeInTheDocument();
+    expect(screen.getByText(/vehicle inventory/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
   });
 });

@@ -10,11 +10,19 @@ vi.mock('../../features/auth/hooks/useAuth', () => ({
 
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
-function renderWithRouter(ui, initialRoute = '/') {
+function renderWithRouter({ isAuthenticated = false, isLoading = false, route = '/' }) {
+  vi.mocked(useAuth).mockReturnValue({
+    isAuthenticated,
+    isAdmin: isAuthenticated,
+    isLoading,
+    user: isAuthenticated ? { role: 'USER' } : null,
+  });
   return render(
-    <MemoryRouter initialEntries={[initialRoute]}>
+    <MemoryRouter initialEntries={[route]}>
       <Routes>
-        <Route path="/" element={ui} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<div>Protected Content</div>} />
+        </Route>
         <Route path="/login" element={<div>Login Page</div>} />
       </Routes>
     </MemoryRouter>
@@ -23,21 +31,18 @@ function renderWithRouter(ui, initialRoute = '/') {
 
 describe('ProtectedRoute', () => {
   it('renders children when authenticated', () => {
-    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: true, isAdmin: false, user: { role: 'USER' } });
-    renderWithRouter(<ProtectedRoute><div>Protected Content</div></ProtectedRoute>);
+    renderWithRouter({ isAuthenticated: true });
     expect(screen.getByText(/protected content/i)).toBeInTheDocument();
   });
 
   it('redirects to /login when not authenticated', () => {
-    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: false, isAdmin: false, user: null });
-    renderWithRouter(<ProtectedRoute><div>Protected Content</div></ProtectedRoute>);
+    renderWithRouter({ isAuthenticated: false });
     expect(screen.getByText(/login page/i)).toBeInTheDocument();
     expect(screen.queryByText(/protected content/i)).not.toBeInTheDocument();
   });
 
   it('shows loading state while checking auth', () => {
-    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: false, isAdmin: false, user: null, isLoading: true });
-    renderWithRouter(<ProtectedRoute><div>Protected</div></ProtectedRoute>);
+    renderWithRouter({ isLoading: true });
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 });

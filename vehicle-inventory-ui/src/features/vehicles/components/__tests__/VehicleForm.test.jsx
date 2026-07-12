@@ -34,7 +34,16 @@ describe('VehicleForm', () => {
   });
 
   it('renders update button when vehicle provided', () => {
-    renderForm({ vehicle: { id: '1', make: 'Toyota', model: 'Camry', category: 'SEDAN', price: 28500, quantityInStock: 10 } });
+    renderForm({
+      vehicle: {
+        id: '1',
+        make: 'Toyota',
+        model: 'Camry',
+        category: 'SEDAN',
+        price: 28500,
+        quantityInStock: 10,
+      },
+    });
     expect(screen.getByRole('button', { name: /update vehicle/i })).toBeInTheDocument();
   });
 
@@ -83,7 +92,14 @@ describe('VehicleForm', () => {
   });
 
   it('populates fields when editing existing vehicle', () => {
-    const vehicle = { id: '1', make: 'Toyota', model: 'Camry', category: 'SEDAN', price: 28500, quantityInStock: 10 };
+    const vehicle = {
+      id: '1',
+      make: 'Toyota',
+      model: 'Camry',
+      category: 'SEDAN',
+      price: 28500,
+      quantityInStock: 10,
+    };
     renderForm({ vehicle });
     expect(screen.getByLabelText(/make/i)).toHaveValue('Toyota');
     expect(screen.getByLabelText(/model/i)).toHaveValue('Camry');

@@ -9,9 +9,19 @@ import { VEHICLE_CATEGORIES } from '../../../constants/vehicleCategories';
 const vehicleSchema = yup.object({
   make: yup.string().max(80, 'Make must be 80 characters or less').required('Make is required'),
   model: yup.string().max(80, 'Model must be 80 characters or less').required('Model is required'),
-  category: yup.string().oneOf(VEHICLE_CATEGORIES.map((c) => c.value), 'Invalid category').required('Category is required'),
+  category: yup
+    .string()
+    .oneOf(
+      VEHICLE_CATEGORIES.map((c) => c.value),
+      'Invalid category'
+    )
+    .required('Category is required'),
   price: yup.number().positive('Price must be positive').required('Price is required'),
-  quantityInStock: yup.number().integer('Must be a whole number').min(0, 'Cannot be negative').required('Stock is required'),
+  quantityInStock: yup
+    .number()
+    .integer('Must be a whole number')
+    .min(0, 'Cannot be negative')
+    .required('Stock is required'),
 });
 
 function VehicleForm({ vehicle, onSubmit, onCancel, isSubmitting = false }) {
@@ -24,7 +34,13 @@ function VehicleForm({ vehicle, onSubmit, onCancel, isSubmitting = false }) {
   } = useForm({
     resolver: yupResolver(vehicleSchema),
     defaultValues: vehicle
-      ? { make: vehicle.make, model: vehicle.model, category: vehicle.category, price: vehicle.price, quantityInStock: vehicle.quantityInStock }
+      ? {
+          make: vehicle.make,
+          model: vehicle.model,
+          category: vehicle.category,
+          price: vehicle.price,
+          quantityInStock: vehicle.quantityInStock,
+        }
       : { make: '', model: '', category: '', price: '', quantityInStock: '' },
   });
 
@@ -43,7 +59,9 @@ function VehicleForm({ vehicle, onSubmit, onCancel, isSubmitting = false }) {
         placeholder="e.g. Camry"
       />
       <div>
-        <label htmlFor="category" className="block text-sm font-medium text-text-secondary mb-1">Category</label>
+        <label htmlFor="category" className="block text-sm font-medium text-text-secondary mb-1">
+          Category
+        </label>
         <select
           id="category"
           {...register('category')}
@@ -52,10 +70,14 @@ function VehicleForm({ vehicle, onSubmit, onCancel, isSubmitting = false }) {
         >
           <option value="">Select a category</option>
           {VEHICLE_CATEGORIES.map((cat) => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
+            <option key={cat.value} value={cat.value}>
+              {cat.label}
+            </option>
           ))}
         </select>
-        {errors.category?.message && <p className="text-xs text-danger mt-1">{errors.category.message}</p>}
+        {errors.category?.message && (
+          <p className="text-xs text-danger mt-1">{errors.category.message}</p>
+        )}
       </div>
       <Input
         label="Price"

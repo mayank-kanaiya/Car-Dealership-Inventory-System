@@ -23,7 +23,11 @@ describe('Button Component', () => {
   it('renders disabled state and prevents click', async () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
-    render(<Button onClick={handleClick} disabled>Click</Button>);
+    render(
+      <Button onClick={handleClick} disabled>
+        Click
+      </Button>
+    );
 
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
@@ -81,7 +85,11 @@ describe('Button Component', () => {
   });
 
   it('forwards additional props', () => {
-    render(<Button type="submit" data-testid="custom">Submit</Button>);
+    render(
+      <Button type="submit" data-testid="custom">
+        Submit
+      </Button>
+    );
     const button = screen.getByTestId('custom');
     expect(button).toHaveAttribute('type', 'submit');
   });

@@ -2,7 +2,17 @@ import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
 const Input = forwardRef(function Input(
-  { label, type = 'text', error, helperText, required = false, disabled = false, placeholder, className = '', ...rest },
+  {
+    label,
+    type = 'text',
+    error,
+    helperText,
+    required = false,
+    disabled = false,
+    placeholder,
+    className = '',
+    ...rest
+  },
   ref
 ) {
   const inputId = label ? label.toLowerCase().replace(/\s+/g, '-') : rest.id;
@@ -10,7 +20,9 @@ const Input = forwardRef(function Input(
   const baseInputStyles =
     'w-full px-3 py-2 text-sm border rounded-lg bg-surface text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors duration-200';
 
-  const borderStyle = error ? 'border-danger focus:ring-danger focus:border-danger' : 'border-border';
+  const borderStyle = error
+    ? 'border-danger focus:ring-danger focus:border-danger'
+    : 'border-border';
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
