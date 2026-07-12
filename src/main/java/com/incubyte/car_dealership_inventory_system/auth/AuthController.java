@@ -1,5 +1,6 @@
 package com.incubyte.car_dealership_inventory_system.auth;
 
+import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationRequest;
 import com.incubyte.car_dealership_inventory_system.auth.dto.AuthenticationResponse;
 import com.incubyte.car_dealership_inventory_system.auth.dto.RegistrationRequest;
 import jakarta.validation.Valid;
@@ -24,5 +25,13 @@ public class AuthController {
     ) {
         AuthenticationResponse response = authService.registerUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(
+            @Valid @RequestBody AuthenticationRequest request
+    ) {
+        AuthenticationResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }
