@@ -15,13 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * Exposes REST endpoints for purchasing (any authenticated user) and restocking
+ * (ADMIN only) vehicle inventory.
+ */
 @RestController
-@RequestMapping("/api/vehicles")
+@RequestMapping("/api/v1/vehicles")
 @RequiredArgsConstructor
 public class InventoryController {
 
     private final InventoryService inventoryService;
 
+    /**
+     * POST /api/v1/vehicles/{id}/purchase — Purchases a quantity of a vehicle.
+     * Accessible to any authenticated user. Decreases stock and publishes a VehiclePurchasedEvent.
+     *
+     * @param id      UUID of the vehicle to purchase
+     * @param request contains the quantity (must be >= 1)
+     */
     @PostMapping("/{id}/purchase")
     public ResponseEntity<VehicleResponse> purchase(
             @PathVariable UUID id,
@@ -31,6 +42,13 @@ public class InventoryController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * POST /api/v1/vehicles/{id}/restock — Restocks a quantity of a vehicle.
+     * Restricted to ADMIN role only. Increases stock and publishes a VehicleRestockedEvent.
+     *
+     * @param id      UUID of the vehicle to restock
+     * @param request contains the quantity to add (must be >= 1)
+     */
     @PostMapping("/{id}/restock")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VehicleResponse> restock(

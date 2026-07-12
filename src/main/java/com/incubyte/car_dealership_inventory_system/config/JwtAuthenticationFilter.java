@@ -17,6 +17,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Intercept every HTTP request to extract and validate a JWT from the
+ * {@code Authorization} header, then populate the Spring Security context.
+ *
+ * <p>If no token is present or validation fails, the request proceeds without
+ * authentication — downstream filters and the authorization layer will decide
+ * whether to reject it.</p>
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -35,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
+        // No Bearer token — skip authentication and let the chain continue unauthenticated.
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -57,7 +66,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ex) {
-            // Token validation failed, authentication will not be set in context
+            // Token parsing or validation failed — leave the security context empty so the
+            // request is treated as unauthenticated. The entry-point will return 401 if the
+            // target resource requires authentication.
         }
 
         filterChain.doFilter(request, response);

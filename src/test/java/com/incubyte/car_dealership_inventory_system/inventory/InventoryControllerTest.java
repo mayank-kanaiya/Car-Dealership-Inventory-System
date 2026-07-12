@@ -68,11 +68,11 @@ class InventoryControllerTest {
     }
 
     // =========================================================================
-    // POST /api/vehicles/:id/purchase
+    // POST /api/v1/vehicles/:id/purchase
     // =========================================================================
 
     @Nested
-    @DisplayName("POST /api/vehicles/{id}/purchase")
+    @DisplayName("POST /api/v1/vehicles/{id}/purchase")
     class PurchaseVehicle {
 
         @Test
@@ -88,7 +88,7 @@ class InventoryControllerTest {
             when(inventoryService.purchase(eq(id), any(InventoryRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -110,11 +110,11 @@ class InventoryControllerTest {
             when(inventoryService.purchase(eq(id), any(InventoryRequest.class)))
                     .thenThrow(new ResourceNotFoundException("Vehicle not found with id: " + id));
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+                    .andExpect(jsonPath("$.message").value("Vehicle not found with id: " + id));
 
             verify(inventoryService).purchase(eq(id), any(InventoryRequest.class));
         }
@@ -130,11 +130,11 @@ class InventoryControllerTest {
                     .thenThrow(new InsufficientStockException(
                             "Insufficient stock for vehicle Toyota Camry: requested 100, available 5"));
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isConflict())
-                    .andExpect(jsonPath("$.error").value(
+                    .andExpect(jsonPath("$.message").value(
                             "Insufficient stock for vehicle Toyota Camry: requested 100, available 5"));
 
             verify(inventoryService).purchase(eq(id), any(InventoryRequest.class));
@@ -151,11 +151,11 @@ class InventoryControllerTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity is required"));
 
             verify(inventoryService, never()).purchase(any(), any());
         }
@@ -167,11 +167,11 @@ class InventoryControllerTest {
             UUID id = UUID.randomUUID();
             InventoryRequest request = createInventoryRequest(0);
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity must be at least 1"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity must be at least 1"));
 
             verify(inventoryService, never()).purchase(any(), any());
         }
@@ -183,11 +183,11 @@ class InventoryControllerTest {
             UUID id = UUID.randomUUID();
             InventoryRequest request = createInventoryRequest(-5);
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity must be at least 1"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity must be at least 1"));
 
             verify(inventoryService, never()).purchase(any(), any());
         }
@@ -198,7 +198,7 @@ class InventoryControllerTest {
         void shouldReturnBadRequestWhenBodyIsInvalidJson() throws Exception {
             UUID id = UUID.randomUUID();
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{invalid}"))
                     .andExpect(status().isBadRequest());
@@ -210,7 +210,7 @@ class InventoryControllerTest {
         void shouldReturnBadRequestWhenIdIsNotValidUuid() throws Exception {
             InventoryRequest request = createInventoryRequest(1);
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", "not-a-uuid")
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", "not-a-uuid")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -225,11 +225,11 @@ class InventoryControllerTest {
                     {}
                     """;
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity is required"));
 
             verify(inventoryService, never()).purchase(any(), any());
         }
@@ -247,7 +247,7 @@ class InventoryControllerTest {
             when(inventoryService.purchase(eq(id), any(InventoryRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/vehicles/{id}/purchase", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/purchase", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk());
@@ -257,11 +257,11 @@ class InventoryControllerTest {
     }
 
     // =========================================================================
-    // POST /api/vehicles/:id/restock
+    // POST /api/v1/vehicles/:id/restock
     // =========================================================================
 
     @Nested
-    @DisplayName("POST /api/vehicles/{id}/restock")
+    @DisplayName("POST /api/v1/vehicles/{id}/restock")
     class RestockVehicle {
 
         @Test
@@ -277,7 +277,7 @@ class InventoryControllerTest {
             when(inventoryService.restock(eq(id), any(InventoryRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -297,11 +297,11 @@ class InventoryControllerTest {
             when(inventoryService.restock(eq(id), any(InventoryRequest.class)))
                     .thenThrow(new ResourceNotFoundException("Vehicle not found with id: " + id));
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+                    .andExpect(jsonPath("$.message").value("Vehicle not found with id: " + id));
 
             verify(inventoryService).restock(eq(id), any(InventoryRequest.class));
         }
@@ -317,11 +317,11 @@ class InventoryControllerTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity is required"));
 
             verify(inventoryService, never()).restock(any(), any());
         }
@@ -333,11 +333,11 @@ class InventoryControllerTest {
             UUID id = UUID.randomUUID();
             InventoryRequest request = createInventoryRequest(0);
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity must be at least 1"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity must be at least 1"));
 
             verify(inventoryService, never()).restock(any(), any());
         }
@@ -349,11 +349,11 @@ class InventoryControllerTest {
             UUID id = UUID.randomUUID();
             InventoryRequest request = createInventoryRequest(-3);
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity must be at least 1"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity must be at least 1"));
 
             verify(inventoryService, never()).restock(any(), any());
         }
@@ -364,7 +364,7 @@ class InventoryControllerTest {
         void shouldReturnBadRequestWhenBodyIsInvalidJson() throws Exception {
             UUID id = UUID.randomUUID();
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{invalid}"))
                     .andExpect(status().isBadRequest());
@@ -376,7 +376,7 @@ class InventoryControllerTest {
         void shouldReturnBadRequestWhenIdIsNotValidUuid() throws Exception {
             InventoryRequest request = createInventoryRequest(5);
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", "not-a-uuid")
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", "not-a-uuid")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -391,11 +391,11 @@ class InventoryControllerTest {
                     {}
                     """;
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantity").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantity')].message").value("Quantity is required"));
 
             verify(inventoryService, never()).restock(any(), any());
         }
@@ -407,11 +407,11 @@ class InventoryControllerTest {
             UUID id = UUID.randomUUID();
             InventoryRequest request = createInventoryRequest(5);
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isForbidden())
-                    .andExpect(jsonPath("$.error").value("Access denied"));
+                    .andExpect(jsonPath("$.message").value("You do not have permission to perform this action"));
 
             verify(inventoryService, never()).restock(any(), any());
         }
@@ -429,7 +429,7 @@ class InventoryControllerTest {
             when(inventoryService.restock(eq(id), any(InventoryRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk());
@@ -443,7 +443,7 @@ class InventoryControllerTest {
         void shouldReturnUnsupportedMediaTypeWhenContentTypeIsNotJson() throws Exception {
             UUID id = UUID.randomUUID();
 
-            mockMvc.perform(post("/api/vehicles/{id}/restock", id)
+            mockMvc.perform(post("/api/v1/vehicles/{id}/restock", id)
                             .contentType(MediaType.TEXT_PLAIN)
                             .content("5"))
                     .andExpect(status().isUnsupportedMediaType());

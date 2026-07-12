@@ -3,6 +3,7 @@ package com.incubyte.car_dealership_inventory_system.vehicle;
 import tools.jackson.databind.ObjectMapper;
 import com.incubyte.car_dealership_inventory_system.controller.VehicleController;
 import com.incubyte.car_dealership_inventory_system.dto.request.VehicleRequest;
+import com.incubyte.car_dealership_inventory_system.dto.response.PagedResponse;
 import com.incubyte.car_dealership_inventory_system.dto.response.VehicleResponse;
 import com.incubyte.car_dealership_inventory_system.enums.VehicleCategory;
 import com.incubyte.car_dealership_inventory_system.exception.DuplicateVehicleException;
@@ -87,11 +88,11 @@ class VehicleControllerTest {
     }
 
     // =========================================================================
-    // POST /api/vehicles
+    // POST /api/v1/vehicles
     // =========================================================================
 
     @Nested
-    @DisplayName("POST /api/vehicles")
+    @DisplayName("POST /api/v1/vehicles")
     class CreateVehicle {
 
         @Test
@@ -107,7 +108,7 @@ class VehicleControllerTest {
             when(vehicleService.addVehicle(any(VehicleRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
@@ -129,11 +130,11 @@ class VehicleControllerTest {
             when(vehicleService.addVehicle(any(VehicleRequest.class)))
                     .thenThrow(new DuplicateVehicleException("Vehicle already exists with the same make, model, and category"));
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isConflict())
-                    .andExpect(jsonPath("$.error").value("Vehicle already exists with the same make, model, and category"));
+                    .andExpect(jsonPath("$.message").value("Vehicle already exists with the same make, model, and category"));
         }
 
         @Test
@@ -144,11 +145,11 @@ class VehicleControllerTest {
                     new BigDecimal("28000.00"), 10
             );
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.make").value("Make is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'make')].message").value("Make is required"));
         }
 
         @Test
@@ -159,11 +160,11 @@ class VehicleControllerTest {
                     new BigDecimal("28000.00"), 10
             );
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.model").value("Model is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'model')].message").value("Model is required"));
         }
 
         @Test
@@ -179,11 +180,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.category").value("Category is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'category')].message").value("Category is required"));
         }
 
         @Test
@@ -199,7 +200,7 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest());
@@ -218,11 +219,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price is required"));
         }
 
         @Test
@@ -233,11 +234,11 @@ class VehicleControllerTest {
                     BigDecimal.ZERO, 10
             );
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price must be positive"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price must be positive"));
         }
 
         @Test
@@ -248,11 +249,11 @@ class VehicleControllerTest {
                     new BigDecimal("-100.00"), 10
             );
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price must be positive"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price must be positive"));
         }
 
         @Test
@@ -268,11 +269,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantityInStock").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantityInStock')].message").value("Quantity is required"));
         }
 
         @Test
@@ -283,31 +284,31 @@ class VehicleControllerTest {
                     new BigDecimal("28000.00"), -1
             );
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantityInStock").value("Quantity cannot be negative"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantityInStock')].message").value("Quantity cannot be negative"));
         }
 
         @Test
         @DisplayName("Should return 400 when all required fields are missing")
         void shouldReturnBadRequestWhenAllFieldsAreMissing() throws Exception {
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{}"))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.make").value("Make is required"))
-                    .andExpect(jsonPath("$.model").value("Model is required"))
-                    .andExpect(jsonPath("$.category").value("Category is required"))
-                    .andExpect(jsonPath("$.price").value("Price is required"))
-                    .andExpect(jsonPath("$.quantityInStock").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'make')].message").value("Make is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'model')].message").value("Model is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'category')].message").value("Category is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantityInStock')].message").value("Quantity is required"));
         }
 
         @Test
         @DisplayName("Should return 400 when request body is malformed JSON")
         void shouldReturnBadRequestWhenBodyIsMalformedJson() throws Exception {
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{invalid json}"))
                     .andExpect(status().isBadRequest());
@@ -326,11 +327,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price format invalid"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price format invalid"));
         }
 
         @Test
@@ -343,11 +344,11 @@ class VehicleControllerTest {
                     new BigDecimal("28000.00"), 10
             );
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.make").value("Make must not exceed 80 characters"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'make')].message").value("Make must not exceed 80 characters"));
         }
 
         @Test
@@ -360,17 +361,17 @@ class VehicleControllerTest {
                     new BigDecimal("28000.00"), 10
             );
 
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.model").value("Model must not exceed 80 characters"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'model')].message").value("Model must not exceed 80 characters"));
         }
 
         @Test
         @DisplayName("Should return 415 when Content-Type is not JSON")
         void shouldReturnUnsupportedMediaTypeWhenContentTypeIsNotJson() throws Exception {
-            mockMvc.perform(post("/api/vehicles")
+            mockMvc.perform(post("/api/v1/vehicles")
                             .contentType(MediaType.TEXT_PLAIN)
                             .content("not json"))
                     .andExpect(status().isUnsupportedMediaType());
@@ -378,26 +379,31 @@ class VehicleControllerTest {
     }
 
     // =========================================================================
-    // GET /api/vehicles
+    // GET /api/v1/vehicles
     // =========================================================================
 
     @Nested
-    @DisplayName("GET /api/vehicles")
+    @DisplayName("GET /api/v1/vehicles")
     class GetAllVehicles {
 
         @Test
         @DisplayName("Should return 200 with empty list when no vehicles exist")
         void shouldReturnEmptyListWhenNoVehicles() throws Exception {
-            when(vehicleService.getAllVehicles())
-                    .thenReturn(Collections.emptyList());
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(Collections.emptyList(), 0, 20, 0, 0, true);
+            when(vehicleService.getAllVehicles(0, 20, "id", "asc"))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles")
+            mockMvc.perform(get("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$").isEmpty());
+                    .andExpect(jsonPath("$.content").isEmpty())
+                    .andExpect(jsonPath("$.page").value(0))
+                    .andExpect(jsonPath("$.size").value(20))
+                    .andExpect(jsonPath("$.totalElements").value(0))
+                    .andExpect(jsonPath("$.totalPages").value(0))
+                    .andExpect(jsonPath("$.last").value(true));
 
-            verify(vehicleService).getAllVehicles();
+            verify(vehicleService).getAllVehicles(0, 20, "id", "asc");
         }
 
         @Test
@@ -412,22 +418,23 @@ class VehicleControllerTest {
                             new BigDecimal("22000.00"), 5)
             );
 
-            when(vehicleService.getAllVehicles())
-                    .thenReturn(vehicles);
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(vehicles, 0, 20, 2, 1, true);
+            when(vehicleService.getAllVehicles(0, 20, "id", "asc"))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles")
+            mockMvc.perform(get("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$.length()").value(2))
-                    .andExpect(jsonPath("$[0].id").value(id1.toString()))
-                    .andExpect(jsonPath("$[0].make").value("Toyota"))
-                    .andExpect(jsonPath("$[0].model").value("Camry"))
-                    .andExpect(jsonPath("$[1].id").value(id2.toString()))
-                    .andExpect(jsonPath("$[1].make").value("Honda"))
-                    .andExpect(jsonPath("$[1].model").value("Civic"));
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andExpect(jsonPath("$.content[0].id").value(id1.toString()))
+                    .andExpect(jsonPath("$.content[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$.content[0].model").value("Camry"))
+                    .andExpect(jsonPath("$.content[1].id").value(id2.toString()))
+                    .andExpect(jsonPath("$.content[1].make").value("Honda"))
+                    .andExpect(jsonPath("$.content[1].model").value("Civic"));
 
-            verify(vehicleService).getAllVehicles();
+            verify(vehicleService).getAllVehicles(0, 20, "id", "asc");
         }
 
         @Test
@@ -439,18 +446,19 @@ class VehicleControllerTest {
                             new BigDecimal("55000.00"), 3)
             );
 
-            when(vehicleService.getAllVehicles())
-                    .thenReturn(vehicles);
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(vehicles, 0, 20, 1, 1, true);
+            when(vehicleService.getAllVehicles(0, 20, "id", "asc"))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles")
+            mockMvc.perform(get("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].id").value(id.toString()))
-                    .andExpect(jsonPath("$[0].make").value("Ford"))
-                    .andExpect(jsonPath("$[0].model").value("F-150"))
-                    .andExpect(jsonPath("$[0].category").value("PICKUP_TRUCK"))
-                    .andExpect(jsonPath("$[0].price").value(55000.00))
-                    .andExpect(jsonPath("$[0].quantityInStock").value(3));
+                    .andExpect(jsonPath("$.content[0].id").value(id.toString()))
+                    .andExpect(jsonPath("$.content[0].make").value("Ford"))
+                    .andExpect(jsonPath("$.content[0].model").value("F-150"))
+                    .andExpect(jsonPath("$.content[0].category").value("PICKUP_TRUCK"))
+                    .andExpect(jsonPath("$.content[0].price").value(55000.00))
+                    .andExpect(jsonPath("$.content[0].quantityInStock").value(3));
         }
 
         @Test
@@ -469,18 +477,19 @@ class VehicleControllerTest {
                             VehicleCategory.SPORTS_CAR, new BigDecimal("150000.00"), 2)
             );
 
-            when(vehicleService.getAllVehicles())
-                    .thenReturn(vehicles);
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(vehicles, 0, 20, 5, 1, true);
+            when(vehicleService.getAllVehicles(0, 20, "id", "asc"))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles")
+            mockMvc.perform(get("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(5))
-                    .andExpect(jsonPath("$[0].category").value("SEDAN"))
-                    .andExpect(jsonPath("$[1].category").value("SUV"))
-                    .andExpect(jsonPath("$[2].category").value("PICKUP_TRUCK"))
-                    .andExpect(jsonPath("$[3].category").value("ELECTRIC_SUV"))
-                    .andExpect(jsonPath("$[4].category").value("SPORTS_CAR"));
+                    .andExpect(jsonPath("$.content.length()").value(5))
+                    .andExpect(jsonPath("$.content[0].category").value("SEDAN"))
+                    .andExpect(jsonPath("$.content[1].category").value("SUV"))
+                    .andExpect(jsonPath("$.content[2].category").value("PICKUP_TRUCK"))
+                    .andExpect(jsonPath("$.content[3].category").value("ELECTRIC_SUV"))
+                    .andExpect(jsonPath("$.content[4].category").value("SPORTS_CAR"));
         }
 
         @Test
@@ -492,15 +501,16 @@ class VehicleControllerTest {
                             new BigDecimal("22000.00"), 5)
             );
 
-            when(vehicleService.getAllVehicles())
-                    .thenReturn(vehicles);
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(vehicles, 0, 20, 1, 1, true);
+            when(vehicleService.getAllVehicles(0, 20, "id", "asc"))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles")
+            mockMvc.perform(get("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].make").value("Honda"));
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].make").value("Honda"));
         }
 
         @Test
@@ -518,24 +528,25 @@ class VehicleControllerTest {
                             new BigDecimal("30000.00"), 3)
             );
 
-            when(vehicleService.getAllVehicles())
-                    .thenReturn(vehicles);
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(vehicles, 0, 20, 3, 1, true);
+            when(vehicleService.getAllVehicles(0, 20, "id", "asc"))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles")
+            mockMvc.perform(get("/api/v1/vehicles")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].make").value("Alpha"))
-                    .andExpect(jsonPath("$[1].make").value("Beta"))
-                    .andExpect(jsonPath("$[2].make").value("Gamma"));
+                    .andExpect(jsonPath("$.content[0].make").value("Alpha"))
+                    .andExpect(jsonPath("$.content[1].make").value("Beta"))
+                    .andExpect(jsonPath("$.content[2].make").value("Gamma"));
         }
     }
 
     // =========================================================================
-    // GET /api/vehicles/:id
+    // GET /api/v1/vehicles/:id
     // =========================================================================
 
     @Nested
-    @DisplayName("GET /api/vehicles/{id}")
+    @DisplayName("GET /api/v1/vehicles/{id}")
     class GetVehicleById {
 
         @Test
@@ -550,7 +561,7 @@ class VehicleControllerTest {
             when(vehicleService.getVehicleById(id))
                     .thenReturn(response);
 
-            mockMvc.perform(get("/api/vehicles/{id}", id)
+            mockMvc.perform(get("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(id.toString()))
@@ -571,10 +582,10 @@ class VehicleControllerTest {
             when(vehicleService.getVehicleById(id))
                     .thenThrow(new ResourceNotFoundException("Vehicle not found with id: " + id));
 
-            mockMvc.perform(get("/api/vehicles/{id}", id)
+            mockMvc.perform(get("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+                    .andExpect(jsonPath("$.message").value("Vehicle not found with id: " + id));
 
             verify(vehicleService).getVehicleById(id);
         }
@@ -591,7 +602,7 @@ class VehicleControllerTest {
             when(vehicleService.getVehicleById(id))
                     .thenReturn(response);
 
-            mockMvc.perform(get("/api/vehicles/{id}", id)
+            mockMvc.perform(get("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.category").value("SUV"));
@@ -600,18 +611,18 @@ class VehicleControllerTest {
         @Test
         @DisplayName("Should return 400 when id is not a valid UUID")
         void shouldReturnBadRequestWhenIdIsNotValidUuid() throws Exception {
-            mockMvc.perform(get("/api/vehicles/{id}", "not-a-uuid")
+            mockMvc.perform(get("/api/v1/vehicles/{id}", "not-a-uuid")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
         }
     }
 
     // =========================================================================
-    // PUT /api/vehicles/:id
+    // PUT /api/v1/vehicles/:id
     // =========================================================================
 
     @Nested
-    @DisplayName("PUT /api/vehicles/{id}")
+    @DisplayName("PUT /api/v1/vehicles/{id}")
     class UpdateVehicle {
 
         @Test
@@ -631,7 +642,7 @@ class VehicleControllerTest {
             when(vehicleService.updateVehicle(eq(id), any(VehicleRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -654,11 +665,11 @@ class VehicleControllerTest {
             when(vehicleService.updateVehicle(eq(id), any(VehicleRequest.class)))
                     .thenThrow(new ResourceNotFoundException("Vehicle not found with id: " + id));
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+                    .andExpect(jsonPath("$.message").value("Vehicle not found with id: " + id));
 
             verify(vehicleService).updateVehicle(id, request);
         }
@@ -672,11 +683,11 @@ class VehicleControllerTest {
                     new BigDecimal("30000.00"), 15
             );
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.make").value("Make is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'make')].message").value("Make is required"));
         }
 
         @Test
@@ -688,11 +699,11 @@ class VehicleControllerTest {
                     new BigDecimal("30000.00"), 15
             );
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.model").value("Model is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'model')].message").value("Model is required"));
         }
 
         @Test
@@ -709,11 +720,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.category").value("Category is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'category')].message").value("Category is required"));
         }
 
         @Test
@@ -730,7 +741,7 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest());
@@ -750,11 +761,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price is required"));
         }
 
         @Test
@@ -766,11 +777,11 @@ class VehicleControllerTest {
                     BigDecimal.ZERO, 15
             );
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price must be positive"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price must be positive"));
         }
 
         @Test
@@ -782,11 +793,11 @@ class VehicleControllerTest {
                     new BigDecimal("-5000.00"), 15
             );
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price must be positive"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price must be positive"));
         }
 
         @Test
@@ -803,11 +814,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantityInStock").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantityInStock')].message").value("Quantity is required"));
         }
 
         @Test
@@ -819,11 +830,11 @@ class VehicleControllerTest {
                     new BigDecimal("30000.00"), -1
             );
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.quantityInStock").value("Quantity cannot be negative"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantityInStock')].message").value("Quantity cannot be negative"));
         }
 
         @Test
@@ -831,15 +842,15 @@ class VehicleControllerTest {
         void shouldReturnBadRequestWhenAllFieldsAreMissingOnUpdate() throws Exception {
             UUID id = UUID.randomUUID();
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{}"))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.make").value("Make is required"))
-                    .andExpect(jsonPath("$.model").value("Model is required"))
-                    .andExpect(jsonPath("$.category").value("Category is required"))
-                    .andExpect(jsonPath("$.price").value("Price is required"))
-                    .andExpect(jsonPath("$.quantityInStock").value("Quantity is required"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'make')].message").value("Make is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'model')].message").value("Model is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'category')].message").value("Category is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price is required"))
+                    .andExpect(jsonPath("$.details[?(@.field == 'quantityInStock')].message").value("Quantity is required"));
         }
 
         @Test
@@ -847,7 +858,7 @@ class VehicleControllerTest {
         void shouldReturnBadRequestWhenBodyIsMalformedJsonOnUpdate() throws Exception {
             UUID id = UUID.randomUUID();
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{invalid json}"))
                     .andExpect(status().isBadRequest());
@@ -867,11 +878,11 @@ class VehicleControllerTest {
                     }
                     """;
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.price").value("Price format invalid"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'price')].message").value("Price format invalid"));
         }
 
         @Test
@@ -885,11 +896,11 @@ class VehicleControllerTest {
                     new BigDecimal("30000.00"), 15
             );
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.make").value("Make must not exceed 80 characters"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'make')].message").value("Make must not exceed 80 characters"));
         }
 
         @Test
@@ -903,11 +914,11 @@ class VehicleControllerTest {
                     new BigDecimal("30000.00"), 15
             );
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.model").value("Model must not exceed 80 characters"));
+                    .andExpect(jsonPath("$.details[?(@.field == 'model')].message").value("Model must not exceed 80 characters"));
         }
 
         @Test
@@ -915,7 +926,7 @@ class VehicleControllerTest {
         void shouldReturnBadRequestWhenIdIsNotValidUuid() throws Exception {
             VehicleRequest request = createValidVehicleRequest();
 
-            mockMvc.perform(put("/api/vehicles/{id}", "not-a-uuid")
+            mockMvc.perform(put("/api/v1/vehicles/{id}", "not-a-uuid")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -938,7 +949,7 @@ class VehicleControllerTest {
             when(vehicleService.updateVehicle(eq(id), any(VehicleRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -963,7 +974,7 @@ class VehicleControllerTest {
             when(vehicleService.updateVehicle(eq(id), any(VehicleRequest.class)))
                     .thenReturn(response);
 
-            mockMvc.perform(put("/api/vehicles/{id}", id)
+            mockMvc.perform(put("/api/v1/vehicles/{id}", id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -972,11 +983,11 @@ class VehicleControllerTest {
     }
 
     // =========================================================================
-    // DELETE /api/vehicles/:id
+    // DELETE /api/v1/vehicles/:id
     // =========================================================================
 
     @Nested
-    @DisplayName("DELETE /api/vehicles/{id}")
+    @DisplayName("DELETE /api/v1/vehicles/{id}")
     class DeleteVehicle {
 
         @Test
@@ -987,7 +998,7 @@ class VehicleControllerTest {
 
             doNothing().when(vehicleService).deleteVehicle(id);
 
-            mockMvc.perform(delete("/api/vehicles/{id}", id))
+            mockMvc.perform(delete("/api/v1/vehicles/{id}", id))
                     .andExpect(status().isNoContent())
                     .andExpect(header().doesNotExist("Content-Type"));
 
@@ -1000,9 +1011,9 @@ class VehicleControllerTest {
         void shouldReturnForbiddenWhenNonAdminTriesToDelete() throws Exception {
             UUID id = UUID.randomUUID();
 
-            mockMvc.perform(delete("/api/vehicles/{id}", id))
+            mockMvc.perform(delete("/api/v1/vehicles/{id}", id))
                     .andExpect(status().isForbidden())
-                    .andExpect(jsonPath("$.error").value("Access denied"));
+                    .andExpect(jsonPath("$.message").value("You do not have permission to perform this action"));
 
             verify(vehicleService, never()).deleteVehicle(any());
         }
@@ -1016,9 +1027,9 @@ class VehicleControllerTest {
             doThrow(new ResourceNotFoundException("Vehicle not found with id: " + id))
                     .when(vehicleService).deleteVehicle(id);
 
-            mockMvc.perform(delete("/api/vehicles/{id}", id))
+            mockMvc.perform(delete("/api/v1/vehicles/{id}", id))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+                    .andExpect(jsonPath("$.message").value("Vehicle not found with id: " + id));
 
             verify(vehicleService).deleteVehicle(id);
         }
@@ -1027,7 +1038,7 @@ class VehicleControllerTest {
         @WithMockUser(roles = "ADMIN")
         @DisplayName("Should return 400 when id is not a valid UUID")
         void shouldReturnBadRequestWhenIdIsNotValidUuid() throws Exception {
-            mockMvc.perform(delete("/api/vehicles/{id}", "not-a-uuid"))
+            mockMvc.perform(delete("/api/v1/vehicles/{id}", "not-a-uuid"))
                     .andExpect(status().isBadRequest());
         }
 
@@ -1039,7 +1050,7 @@ class VehicleControllerTest {
 
             doNothing().when(vehicleService).deleteVehicle(id);
 
-            mockMvc.perform(delete("/api/vehicles/{id}", id))
+            mockMvc.perform(delete("/api/v1/vehicles/{id}", id))
                     .andExpect(status().isNoContent());
 
             verify(vehicleService).deleteVehicle(id);
@@ -1053,7 +1064,7 @@ class VehicleControllerTest {
 
             doNothing().when(vehicleService).deleteVehicle(id);
 
-            mockMvc.perform(delete("/api/vehicles/{id}", id))
+            mockMvc.perform(delete("/api/v1/vehicles/{id}", id))
                     .andExpect(status().isNoContent())
                     .andExpect(header().doesNotExist("Content-Type"));
         }
@@ -1067,18 +1078,18 @@ class VehicleControllerTest {
             doThrow(new ResourceNotFoundException("Vehicle not found with id: " + id))
                     .when(vehicleService).deleteVehicle(id);
 
-            mockMvc.perform(delete("/api/vehicles/{id}", id))
+            mockMvc.perform(delete("/api/v1/vehicles/{id}", id))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+                    .andExpect(jsonPath("$.message").value("Vehicle not found with id: " + id));
         }
     }
 
     // =========================================================================
-    // GET /api/vehicles/search
+    // GET /api/v1/vehicles/search
     // =========================================================================
 
     @Nested
-    @DisplayName("GET /api/vehicles/search")
+    @DisplayName("GET /api/v1/vehicles/search")
     class SearchVehicles {
 
         @Test
@@ -1092,19 +1103,20 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "Toyota", "Corolla", VehicleCategory.HATCHBACK,
                     new BigDecimal("22000.00"), 8);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle1, vehicle2), 0, 20, 2, 1, true);
             when(vehicleService.searchVehicles(eq("Toyota"), eq(null), eq(null),
-                    eq(null), eq(null)))
-                    .thenReturn(List.of(vehicle1, vehicle2));
+                    eq(null), eq(null), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("make", "Toyota"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(2))
-                    .andExpect(jsonPath("$[0].make").value("Toyota"))
-                    .andExpect(jsonPath("$[1].model").value("Corolla"));
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andExpect(jsonPath("$.content[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$.content[1].model").value("Corolla"));
 
             verify(vehicleService).searchVehicles(eq("Toyota"), eq(null), eq(null),
-                    eq(null), eq(null));
+                    eq(null), eq(null), eq(0), eq(20));
         }
 
         @Test
@@ -1115,15 +1127,16 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "Honda", "Civic", VehicleCategory.SEDAN,
                     new BigDecimal("25000.00"), 3);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle), 0, 20, 1, 1, true);
             when(vehicleService.searchVehicles(eq(null), eq("Civic"), eq(null),
-                    eq(null), eq(null)))
-                    .thenReturn(List.of(vehicle));
+                    eq(null), eq(null), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("model", "Civic"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].model").value("Civic"));
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].model").value("Civic"));
         }
 
         @Test
@@ -1137,16 +1150,17 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "Honda", "CR-V", VehicleCategory.SUV,
                     new BigDecimal("32000.00"), 6);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(suv1, suv2), 0, 20, 2, 1, true);
             when(vehicleService.searchVehicles(eq(null), eq(null), eq(VehicleCategory.SUV),
-                    eq(null), eq(null)))
-                    .thenReturn(List.of(suv1, suv2));
+                    eq(null), eq(null), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("category", "SUV"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(2))
-                    .andExpect(jsonPath("$[0].category").value("SUV"))
-                    .andExpect(jsonPath("$[1].category").value("SUV"));
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andExpect(jsonPath("$.content[0].category").value("SUV"))
+                    .andExpect(jsonPath("$.content[1].category").value("SUV"));
         }
 
         @Test
@@ -1157,15 +1171,16 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "BMW", "X5", VehicleCategory.SUV,
                     new BigDecimal("65000.00"), 2);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle), 0, 20, 1, 1, true);
             when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
-                    eq(new BigDecimal("50000.00")), eq(null)))
-                    .thenReturn(List.of(vehicle));
+                    eq(new BigDecimal("50000.00")), eq(null), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("minPrice", "50000.00"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].make").value("BMW"));
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].make").value("BMW"));
         }
 
         @Test
@@ -1176,15 +1191,16 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "Honda", "Civic", VehicleCategory.SEDAN,
                     new BigDecimal("25000.00"), 7);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle), 0, 20, 1, 1, true);
             when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
-                    eq(null), eq(new BigDecimal("30000.00"))))
-                    .thenReturn(List.of(vehicle));
+                    eq(null), eq(new BigDecimal("30000.00")), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("maxPrice", "30000.00"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].model").value("Civic"));
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].model").value("Civic"));
         }
 
         @Test
@@ -1198,15 +1214,16 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "Honda", "Accord", VehicleCategory.SEDAN,
                     new BigDecimal("32000.00"), 3);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle1, vehicle2), 0, 20, 2, 1, true);
             when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
-                    eq(new BigDecimal("25000.00")), eq(new BigDecimal("35000.00"))))
-                    .thenReturn(List.of(vehicle1, vehicle2));
+                    eq(new BigDecimal("25000.00")), eq(new BigDecimal("35000.00")), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("minPrice", "25000.00")
                             .param("maxPrice", "35000.00"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(2));
+                    .andExpect(jsonPath("$.content.length()").value(2));
         }
 
         @Test
@@ -1217,34 +1234,36 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "Toyota", "RAV4", VehicleCategory.SUV,
                     new BigDecimal("35000.00"), 4);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle), 0, 20, 1, 1, true);
             when(vehicleService.searchVehicles(eq("Toyota"), eq(null), eq(VehicleCategory.SUV),
-                    eq(new BigDecimal("30000.00")), eq(new BigDecimal("40000.00"))))
-                    .thenReturn(List.of(vehicle));
+                    eq(new BigDecimal("30000.00")), eq(new BigDecimal("40000.00")), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("make", "Toyota")
                             .param("category", "SUV")
                             .param("minPrice", "30000.00")
                             .param("maxPrice", "40000.00"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(1))
-                    .andExpect(jsonPath("$[0].make").value("Toyota"))
-                    .andExpect(jsonPath("$[0].model").value("RAV4"))
-                    .andExpect(jsonPath("$[0].category").value("SUV"));
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$.content[0].model").value("RAV4"))
+                    .andExpect(jsonPath("$.content[0].category").value("SUV"));
         }
 
         @Test
         @WithMockUser
         @DisplayName("Should return 200 with empty list when no vehicles match")
         void shouldReturnEmptyListWhenNoVehiclesMatch() throws Exception {
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(Collections.emptyList(), 0, 20, 0, 0, true);
             when(vehicleService.searchVehicles(eq("Ferrari"), eq(null), eq(null),
-                    eq(null), eq(null)))
-                    .thenReturn(Collections.emptyList());
+                    eq(null), eq(null), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("make", "Ferrari"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(0));
+                    .andExpect(jsonPath("$.content.length()").value(0));
         }
 
         @Test
@@ -1258,23 +1277,25 @@ class VehicleControllerTest {
                     UUID.randomUUID(), "Honda", "Civic", VehicleCategory.HATCHBACK,
                     new BigDecimal("22000.00"), 8);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle1, vehicle2), 0, 20, 2, 1, true);
             when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
-                    eq(null), eq(null)))
-                    .thenReturn(List.of(vehicle1, vehicle2));
+                    eq(null), eq(null), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search"))
+            mockMvc.perform(get("/api/v1/vehicles/search"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(2));
+                    .andExpect(jsonPath("$.content.length()").value(2));
         }
 
         @Test
         @WithMockUser
         @DisplayName("Should call service with correct parameters")
         void shouldCallServiceWithCorrectParameters() throws Exception {
-            when(vehicleService.searchVehicles(any(), any(), any(), any(), any()))
-                    .thenReturn(Collections.emptyList());
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(Collections.emptyList(), 0, 20, 0, 0, true);
+            when(vehicleService.searchVehicles(any(), any(), any(), any(), any(), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("make", "Toyota")
                             .param("model", "Camry")
                             .param("category", "SEDAN")
@@ -1284,43 +1305,45 @@ class VehicleControllerTest {
 
             verify(vehicleService).searchVehicles(
                     eq("Toyota"), eq("Camry"), eq(VehicleCategory.SEDAN),
-                    eq(new BigDecimal("20000.00")), eq(new BigDecimal("30000.00")));
+                    eq(new BigDecimal("20000.00")), eq(new BigDecimal("30000.00")), eq(0), eq(20));
         }
 
         @Test
         @WithMockUser
         @DisplayName("Should return empty list when minPrice is greater than maxPrice")
         void shouldReturnEmptyListWhenMinPriceExceedsMaxPrice() throws Exception {
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(Collections.emptyList(), 0, 20, 0, 0, true);
             when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
-                    eq(new BigDecimal("50000.00")), eq(new BigDecimal("10000.00"))))
-                    .thenReturn(Collections.emptyList());
+                    eq(new BigDecimal("50000.00")), eq(new BigDecimal("10000.00")), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("minPrice", "50000.00")
                             .param("maxPrice", "10000.00"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(0));
+                    .andExpect(jsonPath("$.content.length()").value(0));
         }
 
         @Test
         @WithMockUser
         @DisplayName("Should return empty list when maxPrice is negative and no vehicles match")
         void shouldReturnEmptyListWhenMaxPriceIsNegative() throws Exception {
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(Collections.emptyList(), 0, 20, 0, 0, true);
             when(vehicleService.searchVehicles(eq(null), eq(null), eq(null),
-                    eq(null), eq(new BigDecimal("-500.00"))))
-                    .thenReturn(Collections.emptyList());
+                    eq(null), eq(new BigDecimal("-500.00")), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("maxPrice", "-500.00"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.length()").value(0));
+                    .andExpect(jsonPath("$.content.length()").value(0));
         }
 
         @Test
         @WithMockUser
         @DisplayName("Should return 400 when minPrice is not a valid number")
         void shouldReturnBadRequestWhenMinPriceIsNotValidNumber() throws Exception {
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("minPrice", "abc"))
                     .andExpect(status().isBadRequest());
         }
@@ -1329,7 +1352,7 @@ class VehicleControllerTest {
         @WithMockUser
         @DisplayName("Should return 400 when category is invalid enum value")
         void shouldReturnBadRequestWhenCategoryIsInvalidEnumValue() throws Exception {
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("category", "INVALID_CATEGORY"))
                     .andExpect(status().isBadRequest());
         }
@@ -1343,28 +1366,29 @@ class VehicleControllerTest {
                     id, "Toyota", "Camry", VehicleCategory.SEDAN,
                     new BigDecimal("28000.00"), 5);
 
+            PagedResponse<VehicleResponse> pagedResponse = new PagedResponse<>(List.of(vehicle), 0, 20, 1, 1, true);
             when(vehicleService.searchVehicles(eq("Toyota"), eq(null), eq(null),
-                    eq(null), eq(null)))
-                    .thenReturn(List.of(vehicle));
+                    eq(null), eq(null), eq(0), eq(20)))
+                    .thenReturn(pagedResponse);
 
-            mockMvc.perform(get("/api/vehicles/search")
+            mockMvc.perform(get("/api/v1/vehicles/search")
                             .param("make", "Toyota"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].id").value(id.toString()))
-                    .andExpect(jsonPath("$[0].make").value("Toyota"))
-                    .andExpect(jsonPath("$[0].model").value("Camry"))
-                    .andExpect(jsonPath("$[0].category").value("SEDAN"))
-                    .andExpect(jsonPath("$[0].price").value(28000.00))
-                    .andExpect(jsonPath("$[0].quantityInStock").value(5));
+                    .andExpect(jsonPath("$.content[0].id").value(id.toString()))
+                    .andExpect(jsonPath("$.content[0].make").value("Toyota"))
+                    .andExpect(jsonPath("$.content[0].model").value("Camry"))
+                    .andExpect(jsonPath("$.content[0].category").value("SEDAN"))
+                    .andExpect(jsonPath("$.content[0].price").value(28000.00))
+                    .andExpect(jsonPath("$.content[0].quantityInStock").value(5));
         }
     }
 
     // =========================================================================
-    // POST /api/vehicles/:id/image
+    // POST /api/v1/vehicles/:id/image
     // =========================================================================
 
     @Nested
-    @DisplayName("POST /api/vehicles/{id}/image")
+    @DisplayName("POST /api/v1/vehicles/{id}/image")
     class UploadVehicleImage {
 
         @Test
@@ -1383,7 +1407,7 @@ class VehicleControllerTest {
                     .thenReturn(response);
 
             byte[] imageContent = "fake-image-content".getBytes();
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", id)
                             .file(new org.springframework.mock.web.MockMultipartFile(
                                     "file", "test-image.jpg", "image/jpeg", imageContent)))
                     .andExpect(status().isOk())
@@ -1404,11 +1428,11 @@ class VehicleControllerTest {
                     .thenThrow(new ResourceNotFoundException("Vehicle not found with id: " + id));
 
             byte[] imageContent = "fake-image-content".getBytes();
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", id)
                             .file(new org.springframework.mock.web.MockMultipartFile(
                                     "file", "test-image.jpg", "image/jpeg", imageContent)))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.error").value("Vehicle not found with id: " + id));
+                    .andExpect(jsonPath("$.message").value("Vehicle not found with id: " + id));
 
             verify(vehicleService).uploadVehicleImage(eq(id), any(org.springframework.web.multipart.MultipartFile.class));
         }
@@ -1419,7 +1443,7 @@ class VehicleControllerTest {
         void shouldReturnBadRequestWhenNoFileProvided() throws Exception {
             UUID id = UUID.randomUUID();
 
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", id))
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", id))
                     .andExpect(status().isBadRequest());
         }
 
@@ -1428,7 +1452,7 @@ class VehicleControllerTest {
         @DisplayName("Should return 400 when id is not a valid UUID")
         void shouldReturnBadRequestWhenIdIsNotValidUuid() throws Exception {
             byte[] imageContent = "fake-image-content".getBytes();
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", "not-a-uuid")
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", "not-a-uuid")
                             .file(new org.springframework.mock.web.MockMultipartFile(
                                     "file", "test-image.jpg", "image/jpeg", imageContent)))
                     .andExpect(status().isBadRequest());
@@ -1447,7 +1471,7 @@ class VehicleControllerTest {
                     .thenReturn(response);
 
             byte[] imageContent = "fake-png-content".getBytes();
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", id)
                             .file(new org.springframework.mock.web.MockMultipartFile(
                                     "file", "test-image.png", "image/png", imageContent)))
                     .andExpect(status().isOk())
@@ -1468,7 +1492,7 @@ class VehicleControllerTest {
                     .thenReturn(response);
 
             byte[] imageContent = "fake-webp-content".getBytes();
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", id)
                             .file(new org.springframework.mock.web.MockMultipartFile(
                                     "file", "test-image.webp", "image/webp", imageContent)))
                     .andExpect(status().isOk())
@@ -1489,7 +1513,7 @@ class VehicleControllerTest {
                     .thenReturn(response);
 
             byte[] imageContent = "fake-image-content".getBytes();
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", id)
                             .file(new org.springframework.mock.web.MockMultipartFile(
                                     "file", "test-image.jpg", "image/jpeg", imageContent)))
                     .andExpect(status().isOk());
@@ -1510,7 +1534,7 @@ class VehicleControllerTest {
                     .thenReturn(response);
 
             byte[] imageContent = "new-image-content".getBytes();
-            mockMvc.perform(multipart("/api/vehicles/{id}/image", id)
+            mockMvc.perform(multipart("/api/v1/vehicles/{id}/image", id)
                             .file(new org.springframework.mock.web.MockMultipartFile(
                                     "file", "new-image.jpg", "image/jpeg", imageContent)))
                     .andExpect(status().isOk())

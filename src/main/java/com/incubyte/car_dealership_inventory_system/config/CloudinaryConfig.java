@@ -6,6 +6,13 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Map;
 
+/**
+ * Creates the {@link Cloudinary} client bean from application properties.
+ *
+ * <p>The cloud name, API key, and API secret are read from
+ * {@code cloudinary.cloud-name}, {@code cloudinary.api-key}, and
+ * {@code cloudinary.api-secret} respectively.</p>
+ */
 @org.springframework.context.annotation.Configuration
 public class CloudinaryConfig {
 

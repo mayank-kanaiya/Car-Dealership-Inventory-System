@@ -1,5 +1,6 @@
 package com.incubyte.car_dealership_inventory_system.inventory;
 
+import com.incubyte.car_dealership_inventory_system.dto.mapper.VehicleMapper;
 import com.incubyte.car_dealership_inventory_system.dto.request.InventoryRequest;
 import com.incubyte.car_dealership_inventory_system.dto.response.VehicleResponse;
 import com.incubyte.car_dealership_inventory_system.entity.Vehicle;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -35,11 +37,18 @@ class InventoryServiceImplTest {
     @Mock
     private VehicleRepository vehicleRepository;
 
+    @Mock
+    private VehicleMapper vehicleMapper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private InventoryServiceImpl inventoryService;
 
     private Vehicle vehicle;
     private UUID vehicleId;
+    private VehicleResponse vehicleResponse;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +60,16 @@ class InventoryServiceImplTest {
         vehicle.setCategory(VehicleCategory.SEDAN);
         vehicle.setPrice(new BigDecimal("28000.00"));
         vehicle.setQuantityInStock(10);
+        vehicle.setImageUrl("/images/default-vehicle.svg");
+
+        vehicleResponse = new VehicleResponse(
+                vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                new BigDecimal("28000.00"), 10, "/images/default-vehicle.svg"
+        );
+    }
+
+    private void stubMapper(Vehicle v, VehicleResponse resp) {
+        when(vehicleMapper.toResponse(v)).thenReturn(resp);
     }
 
     // =========================================================================
@@ -65,9 +84,14 @@ class InventoryServiceImplTest {
         @DisplayName("Should decrease stock when purchase is valid")
         void shouldDecreaseStockWhenPurchaseIsValid() {
             InventoryRequest request = new InventoryRequest(3);
+            VehicleResponse expectedResponse = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 7, "/images/default-vehicle.svg"
+            );
 
             when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(vehicle));
             when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+            when(vehicleMapper.toResponse(any(Vehicle.class))).thenReturn(expectedResponse);
 
             VehicleResponse response = inventoryService.purchase(vehicleId, request);
 
@@ -81,9 +105,14 @@ class InventoryServiceImplTest {
         @DisplayName("Should decrease stock to zero when purchasing all available stock")
         void shouldDecreaseStockToZeroWhenPurchasingAll() {
             InventoryRequest request = new InventoryRequest(10);
+            VehicleResponse expectedResponse = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 0, "/images/default-vehicle.svg"
+            );
 
             when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(vehicle));
             when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+            when(vehicleMapper.toResponse(any(Vehicle.class))).thenReturn(expectedResponse);
 
             VehicleResponse response = inventoryService.purchase(vehicleId, request);
 
@@ -121,7 +150,7 @@ class InventoryServiceImplTest {
             );
 
             assertEquals(
-                    "Insufficient stock for vehicle Toyota Camry: requested 20, available 10",
+                    "Insufficient stock for Toyota Camry: requested 20, available 10",
                     exception.getMessage()
             );
             verify(vehicleRepository, never()).save(any());
@@ -141,7 +170,7 @@ class InventoryServiceImplTest {
             );
 
             assertEquals(
-                    "Insufficient stock for vehicle Toyota Camry: requested 1, available 0",
+                    "Insufficient stock for Toyota Camry: requested 1, available 0",
                     exception.getMessage()
             );
             verify(vehicleRepository, never()).save(any());
@@ -151,9 +180,14 @@ class InventoryServiceImplTest {
         @DisplayName("Should return response with correct fields after purchase")
         void shouldReturnResponseWithCorrectFields() {
             InventoryRequest request = new InventoryRequest(3);
+            VehicleResponse expectedResponse = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 7, "/images/default-vehicle.svg"
+            );
 
             when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(vehicle));
             when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+            when(vehicleMapper.toResponse(any(Vehicle.class))).thenReturn(expectedResponse);
 
             VehicleResponse response = inventoryService.purchase(vehicleId, request);
 
@@ -178,9 +212,14 @@ class InventoryServiceImplTest {
         @DisplayName("Should increase stock when restock is valid")
         void shouldIncreaseStockWhenRestockIsValid() {
             InventoryRequest request = new InventoryRequest(5);
+            VehicleResponse expectedResponse = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 15, "/images/default-vehicle.svg"
+            );
 
             when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(vehicle));
             when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+            when(vehicleMapper.toResponse(any(Vehicle.class))).thenReturn(expectedResponse);
 
             VehicleResponse response = inventoryService.restock(vehicleId, request);
 
@@ -210,9 +249,14 @@ class InventoryServiceImplTest {
         @DisplayName("Should return response with correct fields after restock")
         void shouldReturnResponseWithCorrectFields() {
             InventoryRequest request = new InventoryRequest(5);
+            VehicleResponse expectedResponse = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 15, "/images/default-vehicle.svg"
+            );
 
             when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(vehicle));
             when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+            when(vehicleMapper.toResponse(any(Vehicle.class))).thenReturn(expectedResponse);
 
             VehicleResponse response = inventoryService.restock(vehicleId, request);
 
@@ -229,9 +273,14 @@ class InventoryServiceImplTest {
         void shouldHandleRestockWhenStockIsZero() {
             vehicle.setQuantityInStock(0);
             InventoryRequest request = new InventoryRequest(10);
+            VehicleResponse expectedResponse = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 10, "/images/default-vehicle.svg"
+            );
 
             when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(vehicle));
             when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+            when(vehicleMapper.toResponse(any(Vehicle.class))).thenReturn(expectedResponse);
 
             VehicleResponse response = inventoryService.restock(vehicleId, request);
 
@@ -245,8 +294,18 @@ class InventoryServiceImplTest {
             InventoryRequest firstRestock = new InventoryRequest(5);
             InventoryRequest secondRestock = new InventoryRequest(3);
 
+            VehicleResponse resp15 = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 15, "/images/default-vehicle.svg"
+            );
+            VehicleResponse resp18 = new VehicleResponse(
+                    vehicleId, "Toyota", "Camry", VehicleCategory.SEDAN,
+                    new BigDecimal("28000.00"), 18, "/images/default-vehicle.svg"
+            );
+
             when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.of(vehicle));
             when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+            when(vehicleMapper.toResponse(any(Vehicle.class))).thenReturn(resp15, resp18);
 
             inventoryService.restock(vehicleId, firstRestock);
             assertEquals(15, vehicle.getQuantityInStock());

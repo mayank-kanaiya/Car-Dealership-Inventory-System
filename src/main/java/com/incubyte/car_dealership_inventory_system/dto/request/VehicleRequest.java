@@ -10,6 +10,10 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
+/**
+ * Captures vehicle creation/update input with validation constraints.
+ * Used as the @RequestBody for POST and PUT vehicle endpoints.
+ */
 public record VehicleRequest(
         @NotBlank(message = "Make is required")
         @Size(max = 80, message = "Make must not exceed 80 characters")

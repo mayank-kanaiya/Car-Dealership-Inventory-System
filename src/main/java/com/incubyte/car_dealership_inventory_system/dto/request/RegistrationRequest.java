@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Captures new user registration input (full name, email, password with min 8 chars).
+ */
 public record RegistrationRequest(
         @NotBlank(message = "Full Name is required")
         String fullName,

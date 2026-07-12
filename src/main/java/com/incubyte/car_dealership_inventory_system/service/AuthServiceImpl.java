@@ -14,6 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implements authentication operations. Registration checks for duplicate
+ * emails, hashes the password with BCrypt via {@link PasswordEncoder},
+ * persists the user, and returns a JWT. Login delegates credential
+ * verification to Spring's {@link AuthenticationManager}, which consults
+ * the {@code CustomUserDetailsService} chain.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -23,6 +30,12 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The raw password is BCrypt-hashed before the entity is persisted
+     * so that plaintext credentials are never stored.</p>
+     */
     @Override
     @Transactional
     public AuthenticationResponse registerUser(RegistrationRequest request) {
@@ -33,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         user.setFullName(request.fullName());
         user.setEmail(request.email());
+        // Hash the plaintext password before persisting — raw passwords must never hit the database.
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole(UserRole.USER);
 
@@ -43,6 +57,14 @@ public class AuthServiceImpl implements AuthService {
         return new AuthenticationResponse("User registered successfully", jwtToken);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Delegates to Spring's {@link AuthenticationManager} which triggers
+     * the configured authentication provider chain (in our case,
+     * {@code DaoAuthenticationProvider} backed by {@code CustomUserDetailsService}).
+     * An exception is thrown automatically if the credentials are invalid.</p>
+     */
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) {
         authenticationManager.authenticate(

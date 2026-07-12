@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import com.incubyte.car_dealership_inventory_system.entity.User;
 
+/**
+ * Provides User entity data access, with lookup by email for authentication.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 

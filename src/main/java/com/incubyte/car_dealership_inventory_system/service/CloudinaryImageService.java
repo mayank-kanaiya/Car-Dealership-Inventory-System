@@ -11,6 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Implements {@link ImageService} backed by Cloudinary. Uploads are placed in
+ * the {@code car-dealership/vehicles} folder, and deletions are skipped for
+ * default placeholder images that live outside Cloudinary.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -21,6 +26,14 @@ public class CloudinaryImageService implements ImageService {
     @Value("${vehicle.default-image:/images/default-vehicle.svg}")
     private String defaultImagePath;
 
+    /**
+     * Uploads the given image to the Cloudinary {@code car-dealership/vehicles}
+     * folder and returns the secure CDN URL.
+     *
+     * @param file the multipart image to upload
+     * @return the Cloudinary secure URL of the uploaded asset
+     * @throws RuntimeException if the upload fails (e.g. network error, size limit)
+     */
     @Override
     public String uploadImage(MultipartFile file) {
         try {
@@ -40,6 +53,13 @@ public class CloudinaryImageService implements ImageService {
         }
     }
 
+    /**
+     * Deletes the image from Cloudinary identified by the given URL.
+     * No-op if the URL is null or points to the default placeholder image,
+     * since those are not Cloudinary-managed assets.
+     *
+     * @param imageUrl the full Cloudinary URL of the image to delete
+     */
     @Override
     public void deleteImage(String imageUrl) {
         if (imageUrl == null || imageUrl.equals(defaultImagePath)) {
@@ -54,6 +74,18 @@ public class CloudinaryImageService implements ImageService {
         }
     }
 
+    /**
+     * Parses a Cloudinary URL to extract the public ID used by the delete API.
+     * Expected format:
+     * {@code https://res.cloudinary.com/<cloud>/image/upload/v1234567890/car-dealership/vehicles/file.jpg}
+     * The method locates the {@code upload} segment, strips the version prefix
+     * and file extension, and returns the remaining path as the public ID
+     * (e.g. {@code v1234567890/car-dealership/vehicles/file}).
+     *
+     * @param imageUrl the full Cloudinary URL
+     * @return the public ID suitable for {@code cloudinary.uploader().destroy()}
+     * @throws RuntimeException if the URL does not match the expected Cloudinary format
+     */
     private String extractPublicId(String imageUrl) {
         String[] parts = imageUrl.split("/");
         int uploadIndex = -1;

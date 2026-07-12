@@ -64,7 +64,7 @@ class AuthControllerTest {
         when(authService.registerUser(any(RegistrationRequest.class)))
                 .thenReturn(new AuthenticationResponse("User registered successfully", "jwt-token"));
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -86,11 +86,11 @@ class AuthControllerTest {
         when(authService.registerUser(any(RegistrationRequest.class)))
                 .thenThrow(new UserAlreadyExistsException("Email already in use"));
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").value("Email already in use"));
+                .andExpect(jsonPath("$.message").value("Email already in use"));
     }
 
     @Test
@@ -102,11 +102,12 @@ class AuthControllerTest {
                 "password123"
         );
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fullName").value("Full Name is required"));
+                .andExpect(jsonPath("$.details[0].field").value("fullName"))
+                .andExpect(jsonPath("$.details[0].message").value("Full Name is required"));
     }
 
     @Test
@@ -118,11 +119,11 @@ class AuthControllerTest {
                 "password123"
         );
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.email").value("Email is required"));
+                .andExpect(jsonPath("$.details[?(@.field == 'email')].message").value("Email is required"));
     }
 
     @Test
@@ -134,11 +135,11 @@ class AuthControllerTest {
                 "password123"
         );
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.email").value("Email format must be valid"));
+                .andExpect(jsonPath("$.details[?(@.field == 'email')].message").value("Email format must be valid"));
     }
 
     @Test
@@ -150,11 +151,11 @@ class AuthControllerTest {
                 null
         );
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.password").value("Password is required"));
+                .andExpect(jsonPath("$.details[?(@.field == 'password')].message").value("Password is required"));
     }
 
     @Test
@@ -166,23 +167,23 @@ class AuthControllerTest {
                 "short1"
         );
 
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.password").value("Password must be at least 8 characters long"));
+                .andExpect(jsonPath("$.details[?(@.field == 'password')].message").value("Password must be at least 8 characters long"));
     }
 
     @Test
     @DisplayName("Should return 400 when required fields are missing from the payload")
     void shouldReturnBadRequestWhenFieldsAreMissing() throws Exception {
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fullName").value("Full Name is required"))
-                .andExpect(jsonPath("$.email").value("Email is required"))
-                .andExpect(jsonPath("$.password").value("Password is required"));
+                .andExpect(jsonPath("$.details[?(@.field == 'fullName')].message").value("Full Name is required"))
+                .andExpect(jsonPath("$.details[?(@.field == 'email')].message").value("Email is required"))
+                .andExpect(jsonPath("$.details[?(@.field == 'password')].message").value("Password is required"));
     }
 
     // =========================================================================
@@ -200,7 +201,7 @@ class AuthControllerTest {
         when(authService.login(any(AuthenticationRequest.class)))
                 .thenReturn(new AuthenticationResponse("Login successful", "valid-jwt-token"));
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -221,11 +222,11 @@ class AuthControllerTest {
         when(authService.login(any(AuthenticationRequest.class)))
                 .thenThrow(new BadCredentialsException("Invalid email or password"));
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value("Invalid email or password"));
+                .andExpect(jsonPath("$.message").value("Invalid email or password"));
     }
 
     @Test
@@ -236,11 +237,11 @@ class AuthControllerTest {
                 "password123"
         );
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.email").value("Email is required"));
+                .andExpect(jsonPath("$.details[?(@.field == 'email')].message").value("Email is required"));
     }
 
     @Test
@@ -251,10 +252,10 @@ class AuthControllerTest {
                 ""
         );
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.password").value("Password is required"));
+                .andExpect(jsonPath("$.details[?(@.field == 'password')].message").value("Password is required"));
     }
 }
