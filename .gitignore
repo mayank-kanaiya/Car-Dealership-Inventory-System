@@ -7,3 +7,5 @@ target/
 .DS_Store
 .env
 application-prod.yml
+production_coding_standards.md
+implementation_plan.md
